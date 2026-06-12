@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useRef, useState } from "react"
+import { AnalyticsPanel } from "./components/AnalyticsPanel"
 import { ActivityTrail } from "./components/ActivityTrail"
 import { DetailPanel } from "./components/DetailPanel"
 import { EmptyState } from "./components/EmptyState"
@@ -5,12 +7,101 @@ import { InboxList } from "./components/InboxList"
 import { OnboardingChecklist } from "./components/OnboardingChecklist"
 import { RulesPreviewPanel } from "./components/RulesPreviewPanel"
 import { SampleDataControls } from "./components/SampleDataControls"
+import { ShortcutHelpPanel } from "./components/ShortcutHelpPanel"
 import { SummaryCard } from "./components/SummaryCard"
 import { Toolbar } from "./components/Toolbar"
 import { useReviewDashboard } from "./hooks/useReviewDashboard"
 
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) {
+    return false
+  }
+
+  return target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT"
+}
+
 export function App(): React.JSX.Element {
   const dashboard = useReviewDashboard()
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const [isShortcutHelpOpen, setIsShortcutHelpOpen] = useState(false)
+  const selectedIndex = useMemo(
+    () => dashboard.filteredEvents.findIndex((item) => item.event.id === dashboard.visibleSelectedId),
+    [dashboard.filteredEvents, dashboard.visibleSelectedId],
+  )
+
+  useEffect(() => {
+    function selectRelativeMessage(offset: number): void {
+      if (dashboard.filteredEvents.length === 0) {
+        return
+      }
+
+      const baseIndex = selectedIndex === -1 ? 0 : selectedIndex
+      const nextIndex = (baseIndex + offset + dashboard.filteredEvents.length) % dashboard.filteredEvents.length
+      const nextItem = dashboard.filteredEvents[nextIndex]
+      if (nextItem !== undefined) {
+        dashboard.setSelectedId(nextItem.event.id)
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent): void {
+      const key = event.key.toLowerCase()
+      const isEditable = isEditableTarget(event.target)
+
+      if (key === "escape" && isShortcutHelpOpen) {
+        event.preventDefault()
+        setIsShortcutHelpOpen(false)
+        return
+      }
+
+      if (isEditable) {
+        return
+      }
+
+      if (event.shiftKey && key === "?") {
+        event.preventDefault()
+        setIsShortcutHelpOpen((isOpen) => !isOpen)
+        return
+      }
+
+      if (key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault()
+        searchInputRef.current?.focus()
+        return
+      }
+
+      if ((key === "j" || event.key === "ArrowDown") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault()
+        selectRelativeMessage(1)
+        return
+      }
+
+      if ((key === "k" || event.key === "ArrowUp") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault()
+        selectRelativeMessage(-1)
+        return
+      }
+
+      if (key === "a" && dashboard.selectedItem !== null) {
+        event.preventDefault()
+        dashboard.updateSelectedStatus("approved")
+        return
+      }
+
+      if (key === "h" && dashboard.selectedItem !== null) {
+        event.preventDefault()
+        dashboard.updateSelectedStatus("hold")
+        return
+      }
+
+      if ((event.metaKey || event.ctrlKey) && key === "e") {
+        event.preventDefault()
+        dashboard.exportReviewJson()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [dashboard, isShortcutHelpOpen, selectedIndex])
 
   return (
     <main className="appShell">
@@ -36,11 +127,14 @@ export function App(): React.JSX.Element {
         quickReplies={dashboard.quickReplies}
         classificationFilter={dashboard.classificationFilter}
         statusFilter={dashboard.statusFilter}
+        activeFilterPresetId={dashboard.activeFilterPresetId}
+        searchInputRef={searchInputRef}
         onQueryChange={dashboard.setQuery}
         onWorkspacePresetChange={dashboard.updateWorkspacePreset}
         onReplyToneChange={dashboard.updateReplyTone}
         onClassificationChange={dashboard.setClassificationFilter}
         onStatusChange={dashboard.setStatusFilter}
+        onFilterPresetChange={dashboard.applyFilterPreset}
       />
 
       <OnboardingChecklist
@@ -57,12 +151,20 @@ export function App(): React.JSX.Element {
         onExportCsv={dashboard.exportReviewCsv}
       />
 
+      <ShortcutHelpPanel
+        isOpen={isShortcutHelpOpen}
+        onToggle={() => setIsShortcutHelpOpen((isOpen) => !isOpen)}
+        onClose={() => setIsShortcutHelpOpen(false)}
+      />
+
       <section className="summaryGrid" aria-label="승인 큐 요약">
         <SummaryCard label="신규" value={dashboard.queueSummary.newCount} detail="아직 처리 전" />
         <SummaryCard label="정보 필요" value={dashboard.queueSummary.needsInfoCount} detail="누락 필드 있음" />
         <SummaryCard label="높은 우선순위" value={dashboard.queueSummary.highPriorityCount} detail="긴급/스팸 신호" tone="alert" />
         <SummaryCard label="승인됨" value={dashboard.queueSummary.approvedCount} detail="목업 승인 완료" tone="positive" />
       </section>
+
+      <AnalyticsPanel analytics={dashboard.localAnalytics} />
 
       <section className="operatorDeck" aria-label="운영자 컨트롤과 감사 로그">
         <RulesPreviewPanel />

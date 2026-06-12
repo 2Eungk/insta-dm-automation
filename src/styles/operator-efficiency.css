@@ -1,0 +1,282 @@
+.filterPresetStrip,
+.shortcutHelp {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 8px;
+}
+
+.filterPresetStrip > span {
+  color: #cad1cc;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.filterPresetStrip div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterPresetStrip button,
+.shortcutToggle,
+.shortcutPanel button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(237, 241, 238, 0.12);
+  border-radius: 6px;
+  background: #202426;
+  color: #f7f4e8;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.filterPresetStrip button.active {
+  border-color: rgba(199, 243, 107, 0.46);
+  background: rgba(199, 243, 107, 0.14);
+  color: #dfffa1;
+}
+
+.shortcutHelp,
+.analyticsPanel {
+  margin-top: 16px;
+  border: 1px solid rgba(237, 241, 238, 0.1);
+  border-radius: 8px;
+  background: rgba(28, 31, 33, 0.92);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.shortcutHelp {
+  padding: 12px;
+}
+
+.shortcutToggle {
+  justify-self: start;
+}
+
+.shortcutPanel {
+  display: grid;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.shortcutPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.shortcutPanelHeader strong,
+.analyticsHeader strong {
+  color: #f7f4e8;
+}
+
+.shortcutPanel dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.shortcutPanel dl div {
+  display: grid;
+  gap: 6px;
+  min-height: 74px;
+  padding: 12px;
+  border: 1px solid rgba(237, 241, 238, 0.08);
+  border-radius: 8px;
+  background: rgba(17, 19, 21, 0.72);
+}
+
+.shortcutPanel dt {
+  color: #c7f36b;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.shortcutPanel dd {
+  margin: 0;
+  color: #b9c1bb;
+  font-size: 0.86rem;
+}
+
+.analyticsHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.1);
+}
+
+.analyticsHeader p,
+.analyticsBlock h3 {
+  margin: 0;
+  color: #aeb8b1;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.analyticsHeader span,
+.analyticsEmpty {
+  color: #9fa9a3;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.analyticsBlock {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: 220px;
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.08);
+  border-radius: 8px;
+  background: rgba(17, 19, 21, 0.66);
+}
+
+.analyticsBars {
+  display: grid;
+  gap: 10px;
+}
+
+.analyticsBarRow {
+  display: grid;
+  gap: 6px;
+}
+
+.analyticsBarLabel {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #cbd3ce;
+  font-size: 0.82rem;
+}
+
+.analyticsBarLabel strong {
+  color: #f7f4e8;
+}
+
+.analyticsBarTrack {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(237, 241, 238, 0.08);
+}
+
+.analyticsBarFill {
+  height: 100%;
+  min-width: 3px;
+  border-radius: inherit;
+  background: #7fd8c0;
+}
+
+.analytics-high,
+.analytics-spam,
+.analytics-ignored {
+  background: #ff7d6e;
+}
+
+.analytics-medium,
+.analytics-support,
+.analytics-hold {
+  background: #ffcf5a;
+}
+
+.analytics-approved,
+.analytics-normal,
+.analytics-product {
+  background: #c7f36b;
+}
+
+.hotspotList {
+  display: grid;
+  gap: 8px;
+}
+
+.hotspotList article {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 207, 90, 0.08);
+}
+
+.hotspotList span {
+  color: #e5ded0;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.hotspotList strong {
+  color: #ffdc81;
+}
+
+.hotspotList em {
+  color: #9fa9a3;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.slaPill {
+  justify-self: start;
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(237, 241, 238, 0.07);
+  color: #aeb8b1;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.sla-new {
+  background: rgba(127, 216, 192, 0.12);
+  color: #a9ead9;
+}
+
+.sla-older {
+  background: rgba(255, 207, 90, 0.12);
+  color: #ffdc81;
+}
+
+.sla-urgent {
+  background: rgba(255, 125, 110, 0.14);
+  color: #ffb5aa;
+}
+
+@media (max-width: 980px) {
+  .analyticsGrid,
+  .shortcutPanel dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .analyticsHeader,
+  .shortcutPanelHeader {
+    display: grid;
+  }
+
+  .analyticsGrid,
+  .shortcutPanel dl {
+    grid-template-columns: 1fr;
+  }
+
+  .filterPresetStrip button,
+  .shortcutToggle {
+    flex: 1 1 130px;
+  }
+}

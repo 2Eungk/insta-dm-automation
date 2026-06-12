@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState } from "react"
 import { downloadTextFile } from "../browser/download"
 import { SAMPLE_SCENARIO_EVENTS, SAMPLE_SCENARIO_LABELS } from "../data/sampleScenarios"
 import { analyzeEvent } from "../domain/analyze"
+import { buildLocalAnalytics } from "../domain/analytics"
 import { buildReviewCsvExport, buildReviewJsonExport } from "../domain/exportReview"
+import { filterReviewEvents } from "../domain/filters"
+import type { FilterPresetId } from "../domain/filterPresets"
 import { REPLY_TONE_LABELS, STATUS_LABELS } from "../domain/labels"
-import { summarizeQueue, type QueueSummary } from "../domain/review"
+import { summarizeQueue } from "../domain/review"
 import { buildDraftReply } from "../domain/templates"
 import type {
   Classification,
@@ -17,6 +20,7 @@ import type {
   WorkspacePreset,
 } from "../domain/types"
 import { PRESET_HINTS, buildKnowledgeSuggestions } from "../domain/workspace"
+import type { ReviewDashboard } from "./reviewDashboardTypes"
 import {
   createAuditLogEntry,
   createState,
@@ -37,58 +41,8 @@ import {
   type StoredState,
 } from "../storage/persistence"
 
-type ReviewDashboard = {
-  readonly filteredEvents: readonly EventViewModel[]
-  readonly selectedItem: EventViewModel | null
-  readonly visibleSelectedId: string
-  readonly query: string
-  readonly preferences: UserPreferences
-  readonly sampleScenario: SampleScenario
-  readonly isOnboardingVisible: boolean
-  readonly classificationFilter: Classification | "all"
-  readonly statusFilter: Status | "all"
-  readonly selectedBatchIds: readonly string[]
-  readonly auditLog: StoredAuditLog
-  readonly queueSummary: QueueSummary
-  readonly quickReplies: readonly string[]
-  readonly knowledgeSuggestions: ReturnType<typeof buildKnowledgeSuggestions>
-  readonly sampleEventCount: number
-  readonly hasActiveFilters: boolean
-  readonly setQuery: (query: string) => void
-  readonly setClassificationFilter: (classification: Classification | "all") => void
-  readonly setStatusFilter: (status: Status | "all") => void
-  readonly setSelectedId: (eventId: string) => void
-  readonly setIsOnboardingVisible: (isVisible: boolean) => void
-  readonly updateWorkspacePreset: (workspacePreset: WorkspacePreset) => void
-  readonly updateReplyTone: (replyTone: ReplyTone) => void
-  readonly updateSelectedDraft: (draft: string) => void
-  readonly updateSelectedStatus: (status: Status) => void
-  readonly appendMockSendLog: () => void
-  readonly regenerateSelectedDraft: () => void
-  readonly toggleBatchSelection: (eventId: string) => void
-  readonly selectAllVisible: () => void
-  readonly clearBatchSelection: () => void
-  readonly updateSampleScenario: (sampleScenario: SampleScenario) => void
-  readonly resetCurrentSampleState: () => void
-  readonly exportReviewJson: () => void
-  readonly exportReviewCsv: () => void
-  readonly updateBatchStatus: (status: Status) => void
-}
-
 function createDefaultState(item: EventViewModel, replyTone: ReplyTone): EventState {
   return createState("new", buildDraftReply(item.event, item.analysis, replyTone), [])
-}
-
-function includesSearch(item: EventViewModel, query: string): boolean {
-  const normalized = query.trim().toLowerCase()
-  if (normalized.length === 0) {
-    return true
-  }
-
-  return [item.event.senderName, item.event.senderHandle, item.event.message, item.state.draft]
-    .join(" ")
-    .toLowerCase()
-    .includes(normalized)
 }
 
 function loadInitialSelectedId(): string {
@@ -105,6 +59,7 @@ export function useReviewDashboard(): ReviewDashboard {
   const [query, setQuery] = useState("")
   const [classificationFilter, setClassificationFilter] = useState<Classification | "all">("all")
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all")
+  const [activeFilterPresetId, setActiveFilterPresetId] = useState<FilterPresetId>("all")
   const [selectedBatchIds, setSelectedBatchIds] = useState<readonly string[]>([])
   const [auditLog, setAuditLog] = useState<StoredAuditLog>(() => loadAuditLog())
   const sampleEvents = SAMPLE_SCENARIO_EVENTS[sampleScenario]
@@ -120,25 +75,30 @@ export function useReviewDashboard(): ReviewDashboard {
   )
   const filteredEvents = useMemo(
     () =>
-      analyzedEvents.filter((item) => {
-        const matchesClassification =
-          classificationFilter === "all" || item.analysis.classification === classificationFilter
-        const matchesStatus = statusFilter === "all" || item.state.status === statusFilter
-        return matchesClassification && matchesStatus && includesSearch(item, query)
+      filterReviewEvents(analyzedEvents, {
+        query,
+        classification: classificationFilter,
+        status: statusFilter,
+        filterPresetId: activeFilterPresetId,
       }),
-    [analyzedEvents, classificationFilter, query, statusFilter],
+    [activeFilterPresetId, analyzedEvents, classificationFilter, query, statusFilter],
   )
   const visibleSelectedId = filteredEvents.some((item) => item.event.id === selectedId)
     ? selectedId
     : (filteredEvents[0]?.event.id ?? "")
   const selectedItem = filteredEvents.find((item) => item.event.id === visibleSelectedId) ?? null
   const queueSummary = useMemo(() => summarizeQueue(analyzedEvents), [analyzedEvents])
+  const localAnalytics = useMemo(() => buildLocalAnalytics(filteredEvents), [filteredEvents])
   const quickReplies = PRESET_HINTS[preferences.workspacePreset].quickReplies
   const knowledgeSuggestions =
     selectedItem === null ? [] : buildKnowledgeSuggestions(selectedItem.analysis, preferences.workspacePreset)
   const visibleEventIds = useMemo(() => filteredEvents.map((item) => item.event.id), [filteredEvents])
   const sampleEventIds = useMemo(() => sampleEvents.map((event) => event.id), [sampleEvents])
-  const hasActiveFilters = query.trim().length > 0 || classificationFilter !== "all" || statusFilter !== "all"
+  const hasActiveFilters =
+    query.trim().length > 0 ||
+    classificationFilter !== "all" ||
+    statusFilter !== "all" ||
+    activeFilterPresetId !== "all"
 
   useEffect(() => saveStoredState(storedState), [storedState])
   useEffect(() => saveUserPreferences(preferences), [preferences])
@@ -163,6 +123,23 @@ export function useReviewDashboard(): ReviewDashboard {
 
   function updateReplyTone(replyTone: ReplyTone): void {
     setPreferences(createUserPreferences(preferences.workspacePreset, replyTone))
+  }
+
+  function updateClassificationFilter(classification: Classification | "all"): void {
+    setActiveFilterPresetId("all")
+    setClassificationFilter(classification)
+  }
+
+  function updateStatusFilter(status: Status | "all"): void {
+    setActiveFilterPresetId("all")
+    setStatusFilter(status)
+  }
+
+  function applyFilterPreset(filterPresetId: FilterPresetId): void {
+    setActiveFilterPresetId(filterPresetId)
+    setClassificationFilter("all")
+    setStatusFilter("all")
+    setQuery("")
   }
 
   function updateSelectedDraft(draft: string): void {
@@ -203,6 +180,7 @@ export function useReviewDashboard(): ReviewDashboard {
     setQuery("")
     setClassificationFilter("all")
     setStatusFilter("all")
+    setActiveFilterPresetId("all")
   }
 
   function resetCurrentSampleState(): void {
@@ -240,18 +218,21 @@ export function useReviewDashboard(): ReviewDashboard {
     isOnboardingVisible,
     classificationFilter,
     statusFilter,
+    activeFilterPresetId,
     selectedBatchIds,
     auditLog,
     queueSummary,
+    localAnalytics,
     quickReplies,
     knowledgeSuggestions,
     sampleEventCount: sampleEvents.length,
     hasActiveFilters,
     setQuery,
-    setClassificationFilter,
-    setStatusFilter,
+    setClassificationFilter: updateClassificationFilter,
+    setStatusFilter: updateStatusFilter,
     setSelectedId,
     setIsOnboardingVisible,
+    applyFilterPreset,
     updateWorkspacePreset,
     updateReplyTone,
     updateSelectedDraft,

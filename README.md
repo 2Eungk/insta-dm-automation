@@ -21,6 +21,10 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - Local activity/audit trail for status changes, draft regeneration, and mock send records
 - Local JSON/CSV export of review data, including event state, classification, extracted fields, draft, and audit count
 - Approval queue summary cards for 신규, 정보 필요, 높은 우선순위, 승인됨
+- Local analytics for the currently visible sample/filter set: classification distribution, priority distribution, response status, and missing-info hotspots
+- Saved local filter view chips: All, Needs info, High priority, Support queue, Spam review, and Approved
+- SLA/age indicators on each inbox item for new, older, and urgent messages based on `receivedAt`
+- Keyboard shortcut help panel with local-only shortcuts for search focus, next/previous message, approve, hold, and JSON export
 - Human-in-the-loop statuses: 신규, 초안작성, 승인됨, 보류, 무시
 - Editable drafts, mock approve/send-log, localStorage persistence
 - Search and classification/status filters with empty-state guidance
@@ -37,16 +41,27 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - Changing the preset updates quick-reply hints and FAQ/knowledge matches only; it does not make the app industry-specific.
 - Changing the reply tone affects newly generated drafts and the "선택 톤으로 재생성" action.
 - Batch actions only change local review statuses. They do not bypass the human-in-the-loop review model.
-- All classifications, suggestions, priority signals, and summary counts are computed from local mock data in the browser.
+- Preset chips, SLA/age labels, analytics, classifications, suggestions, priority signals, and summary counts are computed from local mock data in the browser.
 - No network runtime dependencies, Meta API calls, secrets, backend, payments, or deployment are included.
 
 ## Product-readiness workflow
 
 1. Use the first-run checklist to confirm the app is operating in mock-only mode.
 2. Pick a sample dataset to test a generic, ecommerce, booking/service, or support queue.
-3. Review classification, extracted fields, risk signals, and the generated draft before changing status.
-4. Use "목업 전송 로그" only to record a local simulated send; it does not contact Instagram or Meta.
-5. Export JSON or CSV when you need a local review artifact for QA, handoff, or spreadsheet inspection.
+3. Use saved filter chips and local analytics to triage missing-info, high-priority, support, spam, or approved queues.
+4. Review classification, extracted fields, risk signals, SLA/age label, and the generated draft before changing status.
+5. Use "목업 전송 로그" only to record a local simulated send; it does not contact Instagram or Meta.
+6. Export JSON or CSV when you need a local review artifact for QA, handoff, or spreadsheet inspection.
+
+## Keyboard shortcuts
+
+- `/`: focus search
+- `J` or `ArrowDown`: next visible message
+- `K` or `ArrowUp`: previous visible message
+- `A`: approve the selected message
+- `H`: hold the selected message
+- `Cmd/Ctrl + E`: export local JSON
+- `?`: open or close shortcut help
 
 ## Run
 

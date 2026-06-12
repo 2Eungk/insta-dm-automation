@@ -1,5 +1,6 @@
 import { CLASSIFICATION_LABELS, STATUS_LABELS } from "../domain/labels"
 import { getReviewPriority, getReviewSignals } from "../domain/review"
+import { getSlaAge } from "../domain/sla"
 import type { EventViewModel, Status } from "../domain/types"
 import { EmptyState } from "./EmptyState"
 
@@ -62,6 +63,7 @@ export function InboxList({
         ) : events.map((item) => {
           const priority = getReviewPriority(item)
           const signalCount = getReviewSignals(item).length
+          const slaAge = getSlaAge(item.event.receivedAt)
           const isChecked = selectedBatch.has(item.event.id)
           return (
             <article
@@ -86,6 +88,9 @@ export function InboxList({
                 <span className="itemTopline">
                   <strong>{item.event.senderName}</strong>
                   <span>{formatTime(item.event.receivedAt)}</span>
+                </span>
+                <span className={`slaPill sla-${slaAge.band}`} title={slaAge.detail}>
+                  {slaAge.label} · {slaAge.detail}
                 </span>
                 <span className="handle">{item.event.senderHandle}</span>
                 <span className="messagePreview">{item.event.message}</span>
