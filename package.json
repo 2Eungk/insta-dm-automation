@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
-    "check": "node scripts/smoke-check.mjs",
+    "check": "node scripts/smoke-check.mjs && node scripts/server-smoke-check.mjs",
     "lint": "eslint . --max-warnings=0",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "server:build": "node scripts/build-server.mjs",
+    "server:check": "node scripts/server-smoke-check.mjs",
+    "server:dev": "npm run server:build && node .server/dev.js"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.7.0",
@@ -22,6 +25,7 @@
     "@eslint/js": "^9.39.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "esbuild": "^0.28.1",
     "eslint": "^9.39.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "globals": "^16.5.0",

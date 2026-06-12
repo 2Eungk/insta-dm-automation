@@ -4,10 +4,16 @@ import reactHooks from "eslint-plugin-react-hooks"
 import tseslint from "typescript-eslint"
 
 export default tseslint.config(
-  { ignores: ["dist", "node_modules"] },
+  { ignores: ["dist", "node_modules", ".server"] },
   js.configs.recommended,
   {
     files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
+    files: ["server/**/*.ts"],
     languageOptions: {
       globals: globals.node,
     },
