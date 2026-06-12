@@ -80,7 +80,8 @@ button {
 .inbox,
 .detail,
 .rulesPanel,
-.activityPanel {
+.activityPanel,
+.settingsPanel {
   border: 1px solid rgba(237, 241, 238, 0.1);
   background: rgba(28, 31, 33, 0.92);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);

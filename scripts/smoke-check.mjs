@@ -10,8 +10,10 @@ import { classifyMessage } from "./src/domain/classifier"
 import { extractFields } from "./src/domain/extractor"
 import { buildReviewCsvExport, buildReviewJsonExport } from "./src/domain/exportReview"
 import { itemMatchesFilterPreset, FILTER_PRESETS } from "./src/domain/filterPresets"
+import { DEFAULT_RULE_CONFIG, DEFAULT_TEMPLATE_CONFIG, renderDraftTemplate, validateRuleConfig, validateTemplate } from "./src/domain/localConfig"
 import { getSlaAge } from "./src/domain/sla"
 import { SAMPLE_SCENARIO_EVENTS, SAMPLE_SCENARIO_LABELS } from "./src/data/sampleScenarios"
+import { parseStoredRuleConfig, parseStoredTemplateConfig } from "./src/storage/localAutomationConfig"
 import { createState } from "./src/storage/persistence"
 import { SAMPLE_SCENARIOS } from "./src/domain/types"
 import type { EventViewModel, InstagramEvent, Status } from "./src/domain/types"
@@ -102,6 +104,32 @@ const escapedCsvPayload = buildReviewCsvExport([csvEscapedItem], [])
 assert(escapedCsvPayload.includes('"CSV ""Viewer"""'), "csv should escape quotes in names")
 assert(escapedCsvPayload.includes('"Line 1, ""quoted""\\nLine 2"'), "csv should keep commas, quotes, and line breaks inside one quoted cell")
 
+const parsedTemplateConfig = parseStoredTemplateConfig(JSON.stringify(DEFAULT_TEMPLATE_CONFIG))
+assertEqual(parsedTemplateConfig.product.friendly, DEFAULT_TEMPLATE_CONFIG.product.friendly, "template config serialization")
+assert(validateTemplate(parsedTemplateConfig.product.friendly).length === 0, "default template should pass validation")
+assert(validateTemplate("").some((warning) => warning.id === "empty-template"), "empty template should warn")
+assert(validateTemplate("승인 없이 즉시 전송하고 인증번호를 링크로 보내주세요.").length >= 2, "unsafe template wording should warn")
+const templatePreview = renderDraftTemplate(parsedTemplateConfig.support.professional, item.event, item.analysis, "professional")
+assert(templatePreview.includes("실제 발송 전 운영자가 검토"), "template preview should include review-before-send wording")
+
+const customRuleConfig = parseStoredRuleConfig(JSON.stringify({
+  ...DEFAULT_RULE_CONFIG,
+  keywordGroups: {
+    ...DEFAULT_RULE_CONFIG.keywordGroups,
+    quote: ["견적테스트"],
+  },
+  missingFieldRequirements: {
+    ...DEFAULT_RULE_CONFIG.missingFieldRequirements,
+    support: ["contact"],
+  },
+}))
+const customClassification = classifyMessage("견적테스트 가능할까요?", customRuleConfig)
+assertEqual(customClassification.classification, "quote", "custom keyword config should classify locally")
+const customFields = extractFields("배송 누락입니다", "support", customRuleConfig)
+assert(customFields.missing.includes("contact"), "custom missing-field requirements should serialize and apply")
+assert(validateRuleConfig(customRuleConfig, "quote").length === 0, "custom rule config should validate")
+assert(validateRuleConfig(parseStoredRuleConfig("{not-json"), "product").length === 0, "invalid rule config should fall back to defaults")
+
 const scenarioIds = new Set<string>()
 for (const scenario of SAMPLE_SCENARIOS) {
   const events = SAMPLE_SCENARIO_EVENTS[scenario]
@@ -137,7 +165,7 @@ assertEqual(newSla.detail, "30분 경과", "new SLA detail")
 assertEqual(olderSla.detail, "3시간 경과", "older SLA detail")
 assertEqual(urgentSla.detail, "2일 경과", "urgent SLA detail")
 
-console.log("smoke-check: fixtures, presets, SLA, and exports passed")
+console.log("smoke-check: fixtures, presets, SLA, exports, and local config passed")
 `
 
 const tempDir = await mkdtemp(join(tmpdir(), "insta-dm-smoke-"))

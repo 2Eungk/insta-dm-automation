@@ -13,6 +13,15 @@ export const WORKSPACE_PRESETS = ["generic", "ecommerce", "bookingService", "cre
 export const SAMPLE_SCENARIOS = ["generic", "ecommerce", "booking", "support"] as const
 export const REPLY_TONES = ["friendly", "concise", "professional", "casual"] as const
 export const AUDIT_ACTIONS = ["status-change", "draft-regenerated", "mock-send", "sample-reset"] as const
+export const MISSING_FIELDS = [
+  "topic",
+  "productOrService",
+  "locationOrChannel",
+  "requestedDateTime",
+  "budgetOrPrice",
+  "contact",
+  "orderOrReservationRef",
+] as const
 
 export type Classification = (typeof CLASSIFICATIONS)[number]
 export type Status = (typeof STATUSES)[number]
@@ -20,6 +29,7 @@ export type WorkspacePreset = (typeof WORKSPACE_PRESETS)[number]
 export type SampleScenario = (typeof SAMPLE_SCENARIOS)[number]
 export type ReplyTone = (typeof REPLY_TONES)[number]
 export type AuditAction = (typeof AUDIT_ACTIONS)[number]
+export type MissingField = (typeof MISSING_FIELDS)[number]
 
 export type InstagramEvent = {
   readonly id: string
@@ -40,15 +50,6 @@ export type ExtractedFields = {
   readonly orderOrReservationRef: string | null
   readonly missing: readonly MissingField[]
 }
-
-export type MissingField =
-  | "topic"
-  | "productOrService"
-  | "locationOrChannel"
-  | "requestedDateTime"
-  | "budgetOrPrice"
-  | "contact"
-  | "orderOrReservationRef"
 
 export type Analysis = {
   readonly classification: Classification

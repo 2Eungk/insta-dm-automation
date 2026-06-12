@@ -1,5 +1,6 @@
 import { CLASSIFICATION_LABELS, MISSING_FIELD_LABELS } from "./labels"
 import { appendEuroParticle } from "./korean"
+import { DEFAULT_TEMPLATE_CONFIG, renderDraftTemplate, type TemplateConfig } from "./localConfig"
 import type { Analysis, InstagramEvent, ReplyTone } from "./types"
 
 function formatField(value: string | null): string {
@@ -32,7 +33,20 @@ function toneClosing(tone: ReplyTone): string {
   }
 }
 
-export function buildDraftReply(event: InstagramEvent, analysis: Analysis, tone: ReplyTone): string {
+export function buildDraftReply(
+  event: InstagramEvent,
+  analysis: Analysis,
+  tone: ReplyTone,
+  templateConfig?: TemplateConfig,
+): string {
+  if (templateConfig !== undefined) {
+    return renderDraftTemplate(templateConfig[analysis.classification][tone], event, analysis, tone)
+  }
+
+  if (DEFAULT_TEMPLATE_CONFIG[analysis.classification][tone].trim().length === 0) {
+    return renderDraftTemplate(DEFAULT_TEMPLATE_CONFIG.other.friendly, event, analysis, tone)
+  }
+
   const missingQuestions = analysis.fields.missing
     .map((field) => `- ${MISSING_FIELD_LABELS[field]}`)
     .join("\n")

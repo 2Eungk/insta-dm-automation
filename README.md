@@ -8,16 +8,19 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - Mock Instagram DM/comment inbox
 - Compact demo mode guide for the recommended local walkthrough flow
 - First-run checklist for mock-only workflow, human review-before-send, and production setup gaps
-- Non-functional privacy/safety readiness checklist for future real integrations
+- Informational "Ready before Meta" checklist for future real integrations
 - Switchable sample datasets: generic, ecommerce, booking/service, and customer support
 - Classifications: 상품문의, 가격/견적, 예약/일정, 고객지원/불만, 제휴/협업, 스팸, 기타
 - Extracted fields: 의도/주제, 상품/서비스, 지역/채널, 요청 일시, 예산/가격, 연락처, 주문/예약번호, 누락정보
 - Neutral Korean business-tone draft replies with missing-info questions
 - Local workspace presets: generic, ecommerce, booking/service, creator/community, customer support
 - Persisted reply tone selector: 친절한, 간결한, 전문적인, 캐주얼
+- Local reply template builder for each classification and tone, with selected-message preview and reset-to-default
+- Local rule editor for keyword groups, operator classification hints, and missing-field requirements
+- Template and rule validation warnings for empty templates, missing review-before-send wording, aggressive auto-send language, and unsafe sensitive-link/code requests
 - Preset-aware quick-reply hints and local FAQ/knowledge suggestions
 - Review intelligence for urgent support, spam risk, missing contact/info, and order/reservation refs
-- Local rules/automation preview for classification, priority, and missing-info requirements
+- Local rules/automation preview for classification, priority, and editable missing-info requirements
 - Per-message draft quality checklist for personalization, missing-info requests, no auto-send, spam caution, and contact/order ref handling
 - Batch inbox selection for human-reviewed status changes: mark hold, ignored, or approved
 - Local activity/audit trail for status changes, draft regeneration, and mock send records
@@ -42,7 +45,7 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - [x] Local audit trail for review actions, draft regeneration, mock sends, and sample resets
 - [x] Browser-generated JSON/CSV exports stamped as `local-mock-fixtures`
 - [x] Helper copy/tooltips for rules preview, analytics scope, audit log scope, export, and sample reset controls
-- [x] Deterministic smoke check for sample scenarios, filter presets, SLA labels, JSON metadata, and CSV escaping
+- [x] Deterministic smoke check for sample scenarios, filter presets, SLA labels, JSON metadata, CSV escaping, and local config validation
 - [ ] Real Instagram/Meta API connection, backend storage, secrets, payments, deployment, or automatic sending
 
 ## Demo walkthrough
@@ -60,6 +63,7 @@ Use this path for the cleanest local demo:
 ## Local-only behavior
 
 - Workspace preset and reply tone are stored in `localStorage`.
+- Reply template config and local rule config are stored in `localStorage`; reset controls restore deterministic bundled defaults.
 - First-run checklist visibility and selected sample dataset are stored in `localStorage`.
 - Audit trail entries are stored in `localStorage` and capped locally; they are not sent anywhere.
 - If `localStorage` is blocked, unavailable, over quota, or contains invalid JSON, the app falls back to bundled defaults for the current browser session.
@@ -68,21 +72,38 @@ Use this path for the cleanest local demo:
 - JSON and CSV exports are generated in the browser. The primary path uses `Blob` downloads; if that fails, the app tries a data URL and then a readable local fallback window. No review data is uploaded.
 - Changing the preset updates quick-reply hints and FAQ/knowledge matches only; it does not make the app industry-specific.
 - Changing the reply tone affects newly generated drafts and the "선택 톤으로 재생성" action.
+- Editing templates affects newly generated drafts and the selected-message preview only; it does not create Meta templates or automatic sends.
+- Editing local rules can change mock classifications, missing-info chips, and regenerated drafts in the browser only.
 - Batch actions only change local review statuses. They do not bypass the human-in-the-loop review model.
 - Preset chips, SLA/age labels, analytics, classifications, suggestions, priority signals, and summary counts are computed from local mock data in the browser.
 - No network runtime dependencies, Meta API calls, secrets, backend, payments, or deployment are included.
 
 ## Real integration boundaries
 
-The in-app privacy/safety checklist is planning content only. It does not configure Meta permissions, create retention policy, manage operator roles, submit templates for review, or enforce production controls.
+The in-app "Ready before Meta" checklist is planning content only. It does not configure Meta permissions, create a Facebook Page connection, create a webhook endpoint, store tokens, create retention policy, manage operator roles, submit templates for review, or enforce production controls.
+
+Actual Meta connection remains a hard boundary for this repo state. It requires explicit approval, real secrets, a backend design, secure token storage, webhook verification, and production policy work before any code is added.
 
 Before connecting any real social account, design and implement these outside this demo:
 
+- Business or creator Instagram account ownership checks
+- Facebook Page connection and business asset access review
 - Meta app review, required scopes, webhook verification, token storage, and account ownership checks
 - Backend audit logging, deletion/retention controls, encryption, and export governance
 - Operator roles for reviewer, approver, admin, and audit-only access
 - Reply template review, escalation paths, opt-out language, and policy checks
 - Monitoring, rate limits, abuse handling, and incident response
+
+## Ready before Meta checklist
+
+- Confirm the Instagram account is a supported business or creator account.
+- Confirm the Instagram account is connected to the correct Facebook Page and business assets.
+- Prepare Meta app review evidence and permission justification for the intended use case.
+- Design a verified webhook endpoint with retries, rate limiting, abuse handling, and observability.
+- Store access tokens only in encrypted backend storage with rotation and least-privilege access.
+- Publish a privacy disclosure covering message processing, reviewers, deletion requests, and support contacts.
+- Define retention windows for messages, exports, audit logs, and operator notes.
+- Require a human operator approval flow before any real customer reply is sent.
 
 ## Acceptance criteria
 
@@ -90,6 +111,7 @@ This demo is acceptable when all of the following are true:
 
 - The first viewport clearly says Meta/Instagram sending is not connected.
 - Switching sample scenarios never performs a network request and only uses bundled mock events.
+- Template and rule settings persist locally, validate risky content, and reset to deterministic defaults.
 - Saved filter chips show the expected local subsets for needs-info, high-priority, support, spam, and approved review.
 - Rules preview, analytics, audit trail, sample reset, and export controls explain their local-only scope without blocking the workflow.
 - JSON and CSV exports include `sourceContext: local-mock-fixtures`, `networkPolicy: browser-download-only`, and `integrationStatus: no-real-instagram-connection`.
@@ -132,5 +154,5 @@ npm run lint
 npm run build
 ```
 
-`npm run check` runs a deterministic smoke script against the classifier, extractor, sample scenarios, saved filter presets, SLA labels, JSON export metadata, and CSV escaping without adding a test framework.
+`npm run check` runs a deterministic smoke script against the classifier, extractor, sample scenarios, saved filter presets, SLA labels, JSON export metadata, CSV escaping, and local template/rule config validation without adding a test framework.
 `npm run build` runs TypeScript first and then creates the Vite production bundle.

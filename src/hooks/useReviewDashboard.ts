@@ -7,6 +7,7 @@ import { buildReviewCsvExport, buildReviewJsonExport } from "../domain/exportRev
 import { filterReviewEvents } from "../domain/filters"
 import type { FilterPresetId } from "../domain/filterPresets"
 import { REPLY_TONE_LABELS, STATUS_LABELS } from "../domain/labels"
+import { DEFAULT_RULE_CONFIG, DEFAULT_TEMPLATE_CONFIG, type RuleConfig, type TemplateConfig } from "../domain/localConfig"
 import { summarizeQueue } from "../domain/review"
 import { buildDraftReply } from "../domain/templates"
 import type {
@@ -43,8 +44,8 @@ import {
 
 const AUDIT_LOG_LIMIT = 50
 
-function createDefaultState(item: EventViewModel, replyTone: ReplyTone): EventState {
-  return createState("new", buildDraftReply(item.event, item.analysis, replyTone), [])
+function createDefaultState(item: EventViewModel, replyTone: ReplyTone, templateConfig: TemplateConfig): EventState {
+  return createState("new", buildDraftReply(item.event, item.analysis, replyTone, templateConfig), [])
 }
 
 function loadInitialSelectedId(): string {
@@ -52,7 +53,10 @@ function loadInitialSelectedId(): string {
   return SAMPLE_SCENARIO_EVENTS[sampleScenario][0]?.id ?? ""
 }
 
-export function useReviewDashboard(): ReviewDashboard {
+export function useReviewDashboard(
+  ruleConfig: RuleConfig = DEFAULT_RULE_CONFIG,
+  templateConfig: TemplateConfig = DEFAULT_TEMPLATE_CONFIG,
+): ReviewDashboard {
   const [storedState, setStoredState] = useState<StoredState>(() => loadStoredState())
   const [preferences, setPreferences] = useState<UserPreferences>(() => loadUserPreferences())
   const [sampleScenario, setSampleScenario] = useState<SampleScenario>(() => loadSampleScenario())
@@ -69,11 +73,11 @@ export function useReviewDashboard(): ReviewDashboard {
   const analyzedEvents = useMemo(
     () =>
       sampleEvents.map((event) => {
-        const analysis = analyzeEvent(event)
-        const state = storedState[event.id] ?? createState("new", buildDraftReply(event, analysis, preferences.replyTone), [])
+        const analysis = analyzeEvent(event, ruleConfig)
+        const state = storedState[event.id] ?? createState("new", buildDraftReply(event, analysis, preferences.replyTone, templateConfig), [])
         return { event, analysis, state }
       }),
-    [preferences.replyTone, sampleEvents, storedState],
+    [preferences.replyTone, ruleConfig, sampleEvents, storedState, templateConfig],
   )
   const filteredEvents = useMemo(
     () =>
@@ -115,7 +119,7 @@ export function useReviewDashboard(): ReviewDashboard {
   function updateEventState(eventId: string, updater: (state: EventState) => EventState): void {
     const item = analyzedEvents.find((candidate) => candidate.event.id === eventId)
     if (item === undefined) return
-    const baseState = storedState[eventId] ?? createDefaultState(item, preferences.replyTone)
+    const baseState = storedState[eventId] ?? createDefaultState(item, preferences.replyTone, templateConfig)
     setStoredState({ ...storedState, [eventId]: updater(baseState) })
   }
 
@@ -166,7 +170,7 @@ export function useReviewDashboard(): ReviewDashboard {
   function regenerateSelectedDraft(): void {
     if (selectedItem === null) return
     updateEventState(selectedItem.event.id, (state) =>
-      createState("drafted", buildDraftReply(selectedItem.event, selectedItem.analysis, preferences.replyTone), state.sentLog),
+      createState("drafted", buildDraftReply(selectedItem.event, selectedItem.analysis, preferences.replyTone, templateConfig), state.sentLog),
     )
     appendAudit("draft-regenerated", [selectedItem.event.id], `${selectedItem.event.senderName} 문의 초안을 '${REPLY_TONE_LABELS[preferences.replyTone]}' 톤으로 재생성했습니다.`)
   }
@@ -202,7 +206,7 @@ export function useReviewDashboard(): ReviewDashboard {
     const nextState = selectedVisibleIds.reduce<StoredState>((stateById, eventId) => {
       const item = analyzedEvents.find((candidate) => candidate.event.id === eventId)
       if (item === undefined) return stateById
-      const baseState = stateById[eventId] ?? createDefaultState(item, preferences.replyTone)
+      const baseState = stateById[eventId] ?? createDefaultState(item, preferences.replyTone, templateConfig)
       return { ...stateById, [eventId]: createState(status, baseState.draft, baseState.sentLog) }
     }, storedState)
     setStoredState(nextState)

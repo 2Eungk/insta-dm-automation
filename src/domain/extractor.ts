@@ -1,4 +1,5 @@
 import type { Classification, ExtractedFields, MissingField } from "./types"
+import { DEFAULT_RULE_CONFIG, type RuleConfig } from "./localConfig"
 
 const productsAndServices = [
   "니트",
@@ -74,35 +75,30 @@ function extractReference(text: string): string | null {
   return reference?.[1] ?? null
 }
 
-function missingFieldsFor(classification: Classification, fields: Omit<ExtractedFields, "missing">): readonly MissingField[] {
+function missingFieldsFor(
+  classification: Classification,
+  fields: Omit<ExtractedFields, "missing">,
+  ruleConfig: RuleConfig,
+): readonly MissingField[] {
   const missing: MissingField[] = []
+  const requiredFields = ruleConfig.missingFieldRequirements[classification]
 
-  if (fields.topic === null) missing.push("topic")
-
-  if ((classification === "product" || classification === "quote" || classification === "booking") && fields.productOrService === null) {
-    missing.push("productOrService")
-  }
-
-  if (classification === "booking" && fields.requestedDateTime === null) {
-    missing.push("requestedDateTime")
-  }
-
-  if (classification === "quote" && fields.budgetOrPrice === null) {
-    missing.push("budgetOrPrice")
-  }
-
-  if ((classification === "support" || classification === "booking" || classification === "partnership") && fields.contact === null) {
-    missing.push("contact")
-  }
-
-  if (classification === "support" && fields.orderOrReservationRef === null) {
-    missing.push("orderOrReservationRef")
-  }
+  if (requiredFields.includes("topic") && fields.topic === null) missing.push("topic")
+  if (requiredFields.includes("productOrService") && fields.productOrService === null) missing.push("productOrService")
+  if (requiredFields.includes("locationOrChannel") && fields.locationOrChannel === null) missing.push("locationOrChannel")
+  if (requiredFields.includes("requestedDateTime") && fields.requestedDateTime === null) missing.push("requestedDateTime")
+  if (requiredFields.includes("budgetOrPrice") && fields.budgetOrPrice === null) missing.push("budgetOrPrice")
+  if (requiredFields.includes("contact") && fields.contact === null) missing.push("contact")
+  if (requiredFields.includes("orderOrReservationRef") && fields.orderOrReservationRef === null) missing.push("orderOrReservationRef")
 
   return missing
 }
 
-export function extractFields(message: string, classification: Classification): ExtractedFields {
+export function extractFields(
+  message: string,
+  classification: Classification,
+  ruleConfig: RuleConfig = DEFAULT_RULE_CONFIG,
+): ExtractedFields {
   const fields = {
     topic: topicLabels[classification],
     productOrService: findFirst(message, productsAndServices),
@@ -113,5 +109,5 @@ export function extractFields(message: string, classification: Classification): 
     orderOrReservationRef: extractReference(message),
   }
 
-  return { ...fields, missing: missingFieldsFor(classification, fields) }
+  return { ...fields, missing: missingFieldsFor(classification, fields, ruleConfig) }
 }

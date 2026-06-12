@@ -11,7 +11,9 @@ import { RulesPreviewPanel } from "./components/RulesPreviewPanel"
 import { SampleDataControls } from "./components/SampleDataControls"
 import { ShortcutHelpPanel } from "./components/ShortcutHelpPanel"
 import { SummaryCard } from "./components/SummaryCard"
+import { AutomationSettingsPanel } from "./components/AutomationSettingsPanel"
 import { Toolbar } from "./components/Toolbar"
+import { useLocalAutomationConfig } from "./hooks/useLocalAutomationConfig"
 import { useReviewDashboard } from "./hooks/useReviewDashboard"
 
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -23,7 +25,8 @@ function isEditableTarget(target: EventTarget | null): boolean {
 }
 
 export function App(): React.JSX.Element {
-  const dashboard = useReviewDashboard()
+  const localAutomationConfig = useLocalAutomationConfig()
+  const dashboard = useReviewDashboard(localAutomationConfig.ruleConfig, localAutomationConfig.templateConfig)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [isShortcutHelpOpen, setIsShortcutHelpOpen] = useState(false)
   const selectedIndex = useMemo(
@@ -173,9 +176,22 @@ export function App(): React.JSX.Element {
       <PrivacySafetyChecklist />
 
       <section className="operatorDeck" aria-label="운영자 컨트롤과 감사 로그">
-        <RulesPreviewPanel />
+        <RulesPreviewPanel ruleConfig={localAutomationConfig.ruleConfig} />
         <ActivityTrail entries={dashboard.auditLog} />
       </section>
+
+      <AutomationSettingsPanel
+        selectedItem={dashboard.selectedItem}
+        replyTone={dashboard.preferences.replyTone}
+        templateConfig={localAutomationConfig.templateConfig}
+        ruleConfig={localAutomationConfig.ruleConfig}
+        onTemplateChange={localAutomationConfig.updateTemplate}
+        onResetTemplates={localAutomationConfig.resetTemplates}
+        onKeywordGroupsChange={localAutomationConfig.updateKeywordGroups}
+        onClassificationHintChange={localAutomationConfig.updateClassificationHint}
+        onMissingFieldToggle={localAutomationConfig.toggleMissingField}
+        onResetRules={localAutomationConfig.resetRules}
+      />
 
       <section className="workspace">
         <InboxList
