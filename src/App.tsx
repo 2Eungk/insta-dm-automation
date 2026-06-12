@@ -1,20 +1,28 @@
 import { useEffect, useMemo, useState } from "react"
+import { ActivityTrail } from "./components/ActivityTrail"
 import { DetailPanel } from "./components/DetailPanel"
 import { InboxList } from "./components/InboxList"
+import { RulesPreviewPanel } from "./components/RulesPreviewPanel"
+import { SummaryCard } from "./components/SummaryCard"
 import { Toolbar } from "./components/Toolbar"
 import { MOCK_EVENTS } from "./data/mockEvents"
 import { analyzeEvent } from "./domain/analyze"
+import { REPLY_TONE_LABELS, STATUS_LABELS } from "./domain/labels"
 import { summarizeQueue } from "./domain/review"
 import { buildDraftReply } from "./domain/templates"
 import type { Classification, EventState, EventViewModel, ReplyTone, Status, UserPreferences, WorkspacePreset } from "./domain/types"
 import { PRESET_HINTS, buildKnowledgeSuggestions } from "./domain/workspace"
 import {
   createState,
+  createAuditLogEntry,
   createUserPreferences,
+  loadAuditLog,
   loadStoredState,
   loadUserPreferences,
+  saveAuditLog,
   saveStoredState,
   saveUserPreferences,
+  type StoredAuditLog,
   type StoredState,
 } from "./storage/persistence"
 
@@ -41,6 +49,8 @@ export function App(): React.JSX.Element {
   const [query, setQuery] = useState("")
   const [classificationFilter, setClassificationFilter] = useState<Classification | "all">("all")
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all")
+  const [selectedBatchIds, setSelectedBatchIds] = useState<readonly string[]>([])
+  const [auditLog, setAuditLog] = useState<StoredAuditLog>(() => loadAuditLog())
 
   const analyzedEvents = useMemo(
     () =>
@@ -72,6 +82,7 @@ export function App(): React.JSX.Element {
   const quickReplies = PRESET_HINTS[preferences.workspacePreset].quickReplies
   const knowledgeSuggestions =
     selectedItem === null ? [] : buildKnowledgeSuggestions(selectedItem.analysis, preferences.workspacePreset)
+  const visibleEventIds = useMemo(() => filteredEvents.map((item) => item.event.id), [filteredEvents])
 
   useEffect(() => {
     saveStoredState(storedState)
@@ -80,6 +91,18 @@ export function App(): React.JSX.Element {
   useEffect(() => {
     saveUserPreferences(preferences)
   }, [preferences])
+
+  useEffect(() => {
+    saveAuditLog(auditLog)
+  }, [auditLog])
+
+  function appendAudit(
+    action: "status-change" | "draft-regenerated" | "mock-send",
+    eventIds: readonly string[],
+    summary: string,
+  ): void {
+    setAuditLog((entries) => [createAuditLogEntry(action, eventIds, summary), ...entries].slice(0, 50))
+  }
 
   function updateEventState(eventId: string, updater: (state: EventState) => EventState): void {
     const item = analyzedEvents.find((candidate) => candidate.event.id === eventId)
@@ -113,6 +136,11 @@ export function App(): React.JSX.Element {
     }
 
     updateEventState(selectedItem.event.id, (state) => createState(status, state.draft, state.sentLog))
+    appendAudit(
+      "status-change",
+      [selectedItem.event.id],
+      `${selectedItem.event.senderName} 문의를 '${STATUS_LABELS[status]}' 상태로 변경했습니다.`,
+    )
   }
 
   function appendMockSendLog(): void {
@@ -123,6 +151,7 @@ export function App(): React.JSX.Element {
     updateEventState(selectedItem.event.id, (state) =>
       createState("approved", state.draft, [...state.sentLog, { at: new Date().toISOString(), text: state.draft }]),
     )
+    appendAudit("mock-send", [selectedItem.event.id], `${selectedItem.event.senderName} 문의에 목업 전송 기록을 남겼습니다.`)
   }
 
   function regenerateSelectedDraft(): void {
@@ -132,6 +161,48 @@ export function App(): React.JSX.Element {
 
     updateEventState(selectedItem.event.id, (state) =>
       createState("drafted", buildDraftReply(selectedItem.event, selectedItem.analysis, preferences.replyTone), state.sentLog),
+    )
+    appendAudit(
+      "draft-regenerated",
+      [selectedItem.event.id],
+      `${selectedItem.event.senderName} 문의 초안을 '${REPLY_TONE_LABELS[preferences.replyTone]}' 톤으로 재생성했습니다.`,
+    )
+  }
+
+  function toggleBatchSelection(eventId: string): void {
+    setSelectedBatchIds((ids) => (ids.includes(eventId) ? ids.filter((id) => id !== eventId) : [...ids, eventId]))
+  }
+
+  function selectAllVisible(): void {
+    setSelectedBatchIds(visibleEventIds)
+  }
+
+  function clearBatchSelection(): void {
+    setSelectedBatchIds([])
+  }
+
+  function updateBatchStatus(status: Status): void {
+    const selectedVisibleIds = selectedBatchIds.filter((id) => visibleEventIds.includes(id))
+    if (selectedVisibleIds.length === 0) {
+      return
+    }
+
+    const nextState: StoredState = selectedVisibleIds.reduce((stateById, eventId) => {
+      const item = analyzedEvents.find((candidate) => candidate.event.id === eventId)
+      if (item === undefined) {
+        return stateById
+      }
+
+      const baseState = stateById[eventId] ?? createDefaultState(item, preferences.replyTone)
+      return { ...stateById, [eventId]: createState(status, baseState.draft, baseState.sentLog) }
+    }, storedState)
+
+    setStoredState(nextState)
+    setSelectedBatchIds([])
+    appendAudit(
+      "status-change",
+      selectedVisibleIds,
+      `${selectedVisibleIds.length}개 문의를 '${STATUS_LABELS[status]}' 상태로 일괄 변경했습니다.`,
     )
   }
 
@@ -173,8 +244,22 @@ export function App(): React.JSX.Element {
         <SummaryCard label="승인됨" value={queueSummary.approvedCount} detail="목업 승인 완료" tone="positive" />
       </section>
 
+      <section className="operatorDeck" aria-label="운영자 컨트롤과 감사 로그">
+        <RulesPreviewPanel />
+        <ActivityTrail entries={auditLog} />
+      </section>
+
       <section className="workspace">
-        <InboxList events={filteredEvents} selectedId={visibleSelectedId} onSelect={setSelectedId} />
+        <InboxList
+          events={filteredEvents}
+          selectedId={visibleSelectedId}
+          selectedBatchIds={selectedBatchIds}
+          onSelect={setSelectedId}
+          onToggleBatch={toggleBatchSelection}
+          onSelectAllVisible={selectAllVisible}
+          onClearBatch={clearBatchSelection}
+          onBatchStatusChange={updateBatchStatus}
+        />
         {selectedItem === null ? (
           <section className="detail emptyState">표시할 문의가 없습니다.</section>
         ) : (
@@ -189,23 +274,5 @@ export function App(): React.JSX.Element {
         )}
       </section>
     </main>
-  )
-}
-
-type SummaryCardProps = {
-  readonly label: string
-  readonly value: number
-  readonly detail: string
-  readonly tone?: "alert" | "positive"
-}
-
-function SummaryCard({ label, value, detail, tone }: SummaryCardProps): React.JSX.Element {
-  const className = tone === undefined ? "summaryCard" : `summaryCard ${tone}`
-  return (
-    <article className={className}>
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <p>{detail}</p>
-    </article>
   )
 }

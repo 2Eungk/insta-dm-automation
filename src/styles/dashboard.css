@@ -47,8 +47,17 @@
   margin-top: 16px;
 }
 
+.operatorDeck {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.95fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
 .inbox,
-.detail {
+.detail,
+.rulesPanel,
+.activityPanel {
   border-radius: 8px;
   overflow: hidden;
 }
@@ -62,10 +71,110 @@
   border-bottom: 1px solid rgba(237, 241, 238, 0.1);
 }
 
+.panelHeader.compact {
+  align-items: center;
+}
+
 .panelHeader p {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.18em;
+}
+
+.panelHeader strong {
+  color: #f7f4e8;
+}
+
+.panelHeader span {
+  color: #9fa9a3;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.ruleCardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 16px 16px 10px;
+}
+
+.ruleCard {
+  display: grid;
+  gap: 12px;
+  min-height: 176px;
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.1);
+  border-radius: 8px;
+  background: rgba(17, 19, 21, 0.78);
+}
+
+.ruleCard input {
+  height: auto;
+  min-height: 54px;
+  padding: 9px 10px;
+  color: #cad1cc;
+}
+
+.ruleCard div,
+.missingRuleList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ruleCard em,
+.missingRuleList span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 9px;
+  border-radius: 999px;
+  color: #d8e0dc;
+  background: rgba(237, 241, 238, 0.07);
+  font-size: 0.74rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.rule-classification {
+  border-color: rgba(127, 216, 192, 0.24);
+}
+
+.rule-priority {
+  border-color: rgba(255, 207, 90, 0.28);
+}
+
+.rule-missing {
+  border-color: rgba(199, 243, 107, 0.24);
+}
+
+.missingRuleList {
+  padding: 0 16px 16px;
+}
+
+.activityList {
+  display: grid;
+  max-height: 310px;
+  overflow: auto;
+}
+
+.activityList article,
+.activityList > p {
+  display: grid;
+  gap: 5px;
+  min-height: 84px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.08);
+}
+
+.activityList span {
+  color: #97a39b;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.activityList strong {
+  color: #f7f4e8;
 }
 
 .inboxList {
@@ -76,19 +185,66 @@
 
 .inboxItem {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 42px 1fr;
+  gap: 0;
   width: 100%;
-  padding: 18px;
   border: 0;
   border-bottom: 1px solid rgba(237, 241, 238, 0.08);
   background: transparent;
   color: inherit;
-  text-align: left;
 }
 
 .inboxItem:hover,
 .inboxItem.active {
   background: rgba(199, 243, 107, 0.08);
+}
+
+.inboxSelectButton {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 18px 18px 18px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.batchCheck {
+  display: grid;
+  place-items: start center;
+  padding-top: 19px;
+}
+
+.batchCheck input {
+  width: 18px;
+  height: 18px;
+  accent-color: #c7f36b;
+}
+
+.batchBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.08);
+  background: rgba(17, 19, 21, 0.72);
+}
+
+.batchBar button {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(237, 241, 238, 0.12);
+  border-radius: 6px;
+  background: #202426;
+  color: #f7f4e8;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.batchBar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .itemTopline,

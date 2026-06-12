@@ -1,7 +1,8 @@
 @media (max-width: 980px) {
   .hero,
   .toolbar,
-  .workspace {
+  .workspace,
+  .operatorDeck {
     grid-template-columns: 1fr;
   }
 
@@ -11,6 +12,8 @@
 
   .summaryGrid,
   .signalGrid,
+  .qualityGrid,
+  .ruleCardGrid,
   .knowledgeList {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -27,6 +30,8 @@
 
   .summaryGrid,
   .signalGrid,
+  .qualityGrid,
+  .ruleCardGrid,
   .knowledgeList {
     grid-template-columns: 1fr;
   }

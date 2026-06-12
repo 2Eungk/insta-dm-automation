@@ -11,11 +11,13 @@ export const CLASSIFICATIONS = [
 export const STATUSES = ["new", "drafted", "approved", "hold", "ignored"] as const
 export const WORKSPACE_PRESETS = ["generic", "ecommerce", "bookingService", "creatorCommunity", "customerSupport"] as const
 export const REPLY_TONES = ["friendly", "concise", "professional", "casual"] as const
+export const AUDIT_ACTIONS = ["status-change", "draft-regenerated", "mock-send"] as const
 
 export type Classification = (typeof CLASSIFICATIONS)[number]
 export type Status = (typeof STATUSES)[number]
 export type WorkspacePreset = (typeof WORKSPACE_PRESETS)[number]
 export type ReplyTone = (typeof REPLY_TONES)[number]
+export type AuditAction = (typeof AUDIT_ACTIONS)[number]
 
 export type InstagramEvent = {
   readonly id: string
@@ -89,4 +91,12 @@ export type KnowledgeSuggestion = {
   readonly title: string
   readonly body: string
   readonly cue: string
+}
+
+export type AuditLogEntry = {
+  readonly id: string
+  readonly at: string
+  readonly action: AuditAction
+  readonly eventIds: readonly string[]
+  readonly summary: string
 }

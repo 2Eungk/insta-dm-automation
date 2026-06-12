@@ -78,7 +78,9 @@ button {
 .toolbar,
 .summaryCard,
 .inbox,
-.detail {
+.detail,
+.rulesPanel,
+.activityPanel {
   border: 1px solid rgba(237, 241, 238, 0.1);
   background: rgba(28, 31, 33, 0.92);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
@@ -96,6 +98,7 @@ button {
 .panelHeader p,
 .handle,
 .messagePreview,
-.sendLog p {
+.sendLog p,
+.activityList p {
   color: #aeb8b1;
 }

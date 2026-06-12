@@ -1,6 +1,7 @@
 import { CLASSIFICATION_LABELS, MISSING_FIELD_LABELS, STATUS_LABELS } from "../domain/labels"
 import { getReviewPriority, getReviewSignals } from "../domain/review"
 import type { EventViewModel, KnowledgeSuggestion, Status } from "../domain/types"
+import { QualityChecklist } from "./QualityChecklist"
 
 type DetailPanelProps = {
   readonly item: EventViewModel
@@ -95,6 +96,8 @@ export function DetailPanel({
           ))}
         </div>
       </section>
+
+      <QualityChecklist item={item} />
 
       <section className="knowledgeBox" aria-label="FAQ 및 지식 매칭">
         <header>

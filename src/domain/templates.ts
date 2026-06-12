@@ -1,4 +1,5 @@
 import { CLASSIFICATION_LABELS, MISSING_FIELD_LABELS } from "./labels"
+import { appendEuroParticle } from "./korean"
 import type { Analysis, InstagramEvent, ReplyTone } from "./types"
 
 function formatField(value: string | null): string {
@@ -49,5 +50,5 @@ export function buildDraftReply(event: InstagramEvent, analysis: Analysis, tone:
       ? `\n\n정확한 확인을 위해 아래 정보만 추가로 부탁드립니다.\n${missingQuestions}`
       : ""
 
-  return `${toneOpening(event, tone)} 남겨주신 내용은 ${CLASSIFICATION_LABELS[analysis.classification]}로 확인했습니다.\n\n현재 파악한 내용은 아래와 같습니다.\n- 의도/주제: ${formatField(analysis.fields.topic)}\n- 상품/서비스: ${formatField(analysis.fields.productOrService)}\n- 지역/채널: ${formatField(analysis.fields.locationOrChannel)}\n- 요청 일시: ${formatField(analysis.fields.requestedDateTime)}\n- 예산/가격: ${formatField(analysis.fields.budgetOrPrice)}\n- 연락처: ${formatField(analysis.fields.contact)}\n- 주문/예약번호: ${formatField(analysis.fields.orderOrReservationRef)}${missingBlock}\n\n${toneClosing(tone)}`
+  return `${toneOpening(event, tone)} 남겨주신 내용은 ${appendEuroParticle(CLASSIFICATION_LABELS[analysis.classification])} 확인했습니다.\n\n현재 파악한 내용은 아래와 같습니다.\n- 의도/주제: ${formatField(analysis.fields.topic)}\n- 상품/서비스: ${formatField(analysis.fields.productOrService)}\n- 지역/채널: ${formatField(analysis.fields.locationOrChannel)}\n- 요청 일시: ${formatField(analysis.fields.requestedDateTime)}\n- 예산/가격: ${formatField(analysis.fields.budgetOrPrice)}\n- 연락처: ${formatField(analysis.fields.contact)}\n- 주문/예약번호: ${formatField(analysis.fields.orderOrReservationRef)}${missingBlock}\n\n${toneClosing(tone)}`
 }

@@ -13,6 +13,10 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - Persisted reply tone selector: 친절한, 간결한, 전문적인, 캐주얼
 - Preset-aware quick-reply hints and local FAQ/knowledge suggestions
 - Review intelligence for urgent support, spam risk, missing contact/info, and order/reservation refs
+- Local rules/automation preview for classification, priority, and missing-info requirements
+- Per-message draft quality checklist for personalization, missing-info requests, no auto-send, spam caution, and contact/order ref handling
+- Batch inbox selection for human-reviewed status changes: mark hold, ignored, or approved
+- Local activity/audit trail for status changes, draft regeneration, and mock send records
 - Approval queue summary cards for 신규, 정보 필요, 높은 우선순위, 승인됨
 - Human-in-the-loop statuses: 신규, 초안작성, 승인됨, 보류, 무시
 - Editable drafts, mock approve/send-log, localStorage persistence
@@ -22,8 +26,10 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 ## Local-only behavior
 
 - Workspace preset and reply tone are stored in `localStorage`.
+- Audit trail entries are stored in `localStorage` and capped locally; they are not sent anywhere.
 - Changing the preset updates quick-reply hints and FAQ/knowledge matches only; it does not make the app industry-specific.
 - Changing the reply tone affects newly generated drafts and the "선택 톤으로 재생성" action.
+- Batch actions only change local review statuses. They do not bypass the human-in-the-loop review model.
 - All classifications, suggestions, priority signals, and summary counts are computed from local mock data in the browser.
 - No network runtime dependencies, Meta API calls, secrets, backend, payments, or deployment are included.
 
