@@ -4,6 +4,7 @@
   .workspace,
   .operatorDeck,
   .settingsDeck,
+  .dryRunSummary,
   .sampleControls,
   .sampleScenarioPicker {
     grid-template-columns: 1fr;
@@ -20,6 +21,8 @@
   .knowledgeList,
   .onboardingSteps,
   .demoSteps,
+  .adapterContractGrid,
+  .dryRunColumns,
   .privacyChecklistGrid,
   .settingsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -52,6 +55,8 @@
   .knowledgeList,
   .onboardingSteps,
   .demoSteps,
+  .adapterContractGrid,
+  .dryRunColumns,
   .privacyChecklistGrid,
   .settingsGrid,
   .missingFieldEditor {
@@ -60,6 +65,7 @@
 
   .onboardingPanel header,
   .onboardingCollapsed,
+  .metaReadiness header,
   .privacyChecklist header {
     display: grid;
   }

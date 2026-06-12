@@ -11,8 +11,10 @@ import { extractFields } from "./src/domain/extractor"
 import { buildReviewCsvExport, buildReviewJsonExport } from "./src/domain/exportReview"
 import { itemMatchesFilterPreset, FILTER_PRESETS } from "./src/domain/filterPresets"
 import { DEFAULT_RULE_CONFIG, DEFAULT_TEMPLATE_CONFIG, renderDraftTemplate, validateRuleConfig, validateTemplate } from "./src/domain/localConfig"
+import { normalizeMockMetaWebhookPayload } from "./src/domain/metaReadiness"
 import { getSlaAge } from "./src/domain/sla"
 import { SAMPLE_SCENARIO_EVENTS, SAMPLE_SCENARIO_LABELS } from "./src/data/sampleScenarios"
+import { MOCK_WEBHOOK_PAYLOADS } from "./src/data/mockWebhookPayloads"
 import { parseStoredRuleConfig, parseStoredTemplateConfig } from "./src/storage/localAutomationConfig"
 import { createState } from "./src/storage/persistence"
 import { SAMPLE_SCENARIOS } from "./src/domain/types"
@@ -154,6 +156,41 @@ assert(itemMatchesFilterPreset(needsInfoItem, "needsInfo"), "needs info preset s
 assert(itemMatchesFilterPreset(buildItem(event, "approved"), "approved"), "approved preset should match approved status")
 assert(supportItems.every((supportSampleItem) => itemMatchesFilterPreset(supportSampleItem, "all")), "all preset should match every item")
 
+const webhookFixturesById = new Map(MOCK_WEBHOOK_PAYLOADS.map((fixture) => [fixture.id, fixture]))
+const dmFixture = webhookFixturesById.get("dm-message")
+const commentFixture = webhookFixturesById.get("comment-message")
+const echoFixture = webhookFixturesById.get("message-echo")
+const appReviewFixture = webhookFixturesById.get("app-review-edge")
+const permissionFixture = webhookFixturesById.get("permission-denied")
+assert(dmFixture !== undefined, "dm webhook fixture should be bundled")
+assert(commentFixture !== undefined, "comment webhook fixture should be bundled")
+assert(echoFixture !== undefined, "message echo fixture should be bundled")
+assert(appReviewFixture !== undefined, "app review edge fixture should be bundled")
+assert(permissionFixture !== undefined, "permission denied fixture should be bundled")
+
+const normalizedDm = normalizeMockMetaWebhookPayload(dmFixture.payload, dmFixture.id)
+assertEqual(normalizedDm.events.length, 1, "dm webhook fixture should normalize one event")
+assertEqual(normalizedDm.events[0]?.channel, "dm", "dm webhook fixture channel")
+assertEqual(normalizedDm.events[0]?.senderHandle, "@hana.shop", "dm webhook fixture sender handle")
+assert(normalizedDm.issues.length === 0, "valid dm webhook fixture should have no issues")
+
+const normalizedComment = normalizeMockMetaWebhookPayload(commentFixture.payload, commentFixture.id)
+assertEqual(normalizedComment.events.length, 1, "comment webhook fixture should normalize one event")
+assertEqual(normalizedComment.events[0]?.channel, "comment", "comment webhook fixture channel")
+assert(normalizedComment.events[0]?.message.includes("예약"), "comment webhook fixture should preserve text")
+
+const normalizedEcho = normalizeMockMetaWebhookPayload(echoFixture.payload, echoFixture.id)
+assertEqual(normalizedEcho.events.length, 0, "message echo fixture should not create an inbox event")
+assert(normalizedEcho.issues.some((issue) => issue.code === "message-echo" && issue.severity === "warning"), "message echo fixture should warn")
+
+const normalizedAppReviewEdge = normalizeMockMetaWebhookPayload(appReviewFixture.payload, appReviewFixture.id)
+assertEqual(normalizedAppReviewEdge.events.length, 0, "app review edge fixture should not create malformed events")
+assert(normalizedAppReviewEdge.issues.some((issue) => issue.code === "missing-comment-text" && issue.severity === "error"), "app review edge should report missing text")
+
+const normalizedPermissionDenied = normalizeMockMetaWebhookPayload(permissionFixture.payload, permissionFixture.id)
+assertEqual(normalizedPermissionDenied.events.length, 0, "permission denied fixture should not create events")
+assert(normalizedPermissionDenied.issues.some((issue) => issue.code === "meta-permission-denied" && issue.severity === "error"), "permission denied fixture should report an error")
+
 const fixedNow = new Date("2026-06-12T12:00:00+09:00")
 const newSla = getSlaAge("2026-06-12T11:30:00+09:00", fixedNow)
 const olderSla = getSlaAge("2026-06-12T08:30:00+09:00", fixedNow)
@@ -165,7 +202,7 @@ assertEqual(newSla.detail, "30분 경과", "new SLA detail")
 assertEqual(olderSla.detail, "3시간 경과", "older SLA detail")
 assertEqual(urgentSla.detail, "2일 경과", "urgent SLA detail")
 
-console.log("smoke-check: fixtures, presets, SLA, exports, and local config passed")
+console.log("smoke-check: fixtures, presets, SLA, exports, local config, and webhook dry run passed")
 `
 
 const tempDir = await mkdtemp(join(tmpdir(), "insta-dm-smoke-"))
