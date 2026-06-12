@@ -4,15 +4,19 @@ import type {
   AuditLogEntry,
   EventState,
   ReplyTone,
+  SampleScenario,
   SendLogEntry,
   Status,
   UserPreferences,
   WorkspacePreset,
 } from "../domain/types"
+import { SAMPLE_SCENARIOS } from "../domain/types"
 
 const STORAGE_KEY = "insta-dm-automation:event-state:v2"
 const PREFERENCES_KEY = "insta-dm-automation:preferences:v1"
 const AUDIT_LOG_KEY = "insta-dm-automation:audit-log:v1"
+const SAMPLE_SCENARIO_KEY = "insta-dm-automation:sample-scenario:v1"
+const ONBOARDING_VISIBLE_KEY = "insta-dm-automation:onboarding-visible:v1"
 
 const statusSchema = z.enum(["new", "drafted", "approved", "hold", "ignored"])
 const sendLogSchema = z.object({
@@ -31,7 +35,7 @@ const userPreferencesSchema = z.object({
   workspacePreset: z.enum(["generic", "ecommerce", "bookingService", "creatorCommunity", "customerSupport"]),
   replyTone: z.enum(["friendly", "concise", "professional", "casual"]),
 })
-const auditActionSchema = z.enum(["status-change", "draft-regenerated", "mock-send"])
+const auditActionSchema = z.enum(["status-change", "draft-regenerated", "mock-send", "sample-reset"])
 const auditLogEntrySchema = z.object({
   id: z.string(),
   at: z.string(),
@@ -40,6 +44,8 @@ const auditLogEntrySchema = z.object({
   summary: z.string(),
 })
 const auditLogSchema = z.array(auditLogEntrySchema)
+const sampleScenarioSchema = z.enum(SAMPLE_SCENARIOS)
+const onboardingVisibleSchema = z.boolean()
 
 export type StoredState = Readonly<Record<string, EventState>>
 export type StoredAuditLog = readonly AuditLogEntry[]
@@ -74,6 +80,11 @@ export function loadStoredState(): StoredState {
 
 export function saveStoredState(state: StoredState): void {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+}
+
+export function removeStoredStateForEventIds(state: StoredState, eventIds: readonly string[]): StoredState {
+  const eventIdSet = new Set(eventIds)
+  return Object.fromEntries(Object.entries(state).filter(([eventId]) => !eventIdSet.has(eventId)))
 }
 
 export function createState(status: Status, draft: string, sentLog: readonly SendLogEntry[]): EventState {
@@ -140,6 +151,11 @@ export function saveAuditLog(entries: StoredAuditLog): void {
   window.localStorage.setItem(AUDIT_LOG_KEY, JSON.stringify(entries))
 }
 
+export function removeAuditLogForEventIds(entries: StoredAuditLog, eventIds: readonly string[]): StoredAuditLog {
+  const eventIdSet = new Set(eventIds)
+  return entries.filter((entry) => !entry.eventIds.some((eventId) => eventIdSet.has(eventId)))
+}
+
 export function createAuditLogEntry(
   action: AuditAction,
   eventIds: readonly string[],
@@ -152,4 +168,38 @@ export function createAuditLogEntry(
     eventIds,
     summary,
   }
+}
+
+export function loadSampleScenario(): SampleScenario {
+  const raw = window.localStorage.getItem(SAMPLE_SCENARIO_KEY)
+  const parsed = sampleScenarioSchema.safeParse(raw)
+  return parsed.success ? parsed.data : "generic"
+}
+
+export function saveSampleScenario(sampleScenario: SampleScenario): void {
+  window.localStorage.setItem(SAMPLE_SCENARIO_KEY, sampleScenario)
+}
+
+export function loadOnboardingVisible(): boolean {
+  const raw = window.localStorage.getItem(ONBOARDING_VISIBLE_KEY)
+  if (raw === null) {
+    return true
+  }
+
+  let parsedJson: unknown
+  try {
+    parsedJson = JSON.parse(raw)
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return true
+    }
+    throw error
+  }
+
+  const parsed = onboardingVisibleSchema.safeParse(parsedJson)
+  return parsed.success ? parsed.data : true
+}
+
+export function saveOnboardingVisible(isVisible: boolean): void {
+  window.localStorage.setItem(ONBOARDING_VISIBLE_KEY, JSON.stringify(isVisible))
 }

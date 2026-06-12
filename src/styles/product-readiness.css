@@ -1,0 +1,117 @@
+.onboardingPanel,
+.onboardingCollapsed,
+.sampleControls {
+  margin-top: 16px;
+  border: 1px solid rgba(237, 241, 238, 0.1);
+  border-radius: 8px;
+  background: rgba(28, 31, 33, 0.92);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+}
+
+.onboardingPanel header,
+.onboardingCollapsed,
+.sampleControls {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px;
+}
+
+.onboardingPanel h2 {
+  margin: 7px 0 0;
+  color: #f7f4e8;
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+.onboardingPanel button,
+.onboardingCollapsed button,
+.sampleActions button {
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(237, 241, 238, 0.12);
+  border-radius: 6px;
+  background: #202426;
+  color: #f7f4e8;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.onboardingSteps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+
+.onboardingSteps article {
+  display: grid;
+  gap: 8px;
+  min-height: 132px;
+  padding: 15px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  border-radius: 8px;
+  background: rgba(18, 20, 22, 0.76);
+}
+
+.onboardingSteps strong,
+.onboardingCollapsed span,
+.sampleActions span,
+.emptyState strong {
+  color: #f7f4e8;
+  font-weight: 900;
+}
+
+.onboardingSteps p,
+.sampleScenarioPicker p,
+.emptyState p {
+  margin: 0;
+  color: #aeb8b1;
+  line-height: 1.6;
+}
+
+.sampleScenarioPicker {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(240px, 1fr);
+  gap: 14px;
+  align-items: end;
+}
+
+.sampleActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.sampleActions button:nth-of-type(2),
+.sampleActions button:nth-of-type(3) {
+  border-color: transparent;
+  background: #7fd8c0;
+  color: #10231e;
+}
+
+.auditEmpty {
+  display: grid;
+  gap: 7px;
+  min-height: 128px;
+  padding: 18px;
+  place-content: center;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.08);
+}
+
+.auditEmpty strong {
+  color: #f7f4e8;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 300px;
+  place-content: center;
+  gap: 8px;
+  padding: 24px;
+  color: #aeb8b1;
+  text-align: center;
+}

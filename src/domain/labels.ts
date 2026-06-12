@@ -1,4 +1,4 @@
-import type { Classification, MissingField, ReplyTone, Status, WorkspacePreset } from "./types"
+import type { AuditAction, Classification, MissingField, ReplyTone, Status, WorkspacePreset } from "./types"
 
 export const CLASSIFICATION_LABELS: Record<Classification, string> = {
   product: "상품문의",
@@ -41,4 +41,11 @@ export const MISSING_FIELD_LABELS: Record<MissingField, string> = {
   budgetOrPrice: "예산/가격",
   contact: "연락처",
   orderOrReservationRef: "주문/예약번호",
+}
+
+export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
+  "status-change": "상태 변경",
+  "draft-regenerated": "초안 재생성",
+  "mock-send": "목업 기록",
+  "sample-reset": "샘플 초기화",
 }

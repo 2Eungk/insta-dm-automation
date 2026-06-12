@@ -117,16 +117,20 @@ export function DetailPanel({
 
       <label className="draftEditor">
         <span>한국어 답장 초안</span>
-        <textarea value={item.state.draft} onChange={(event) => onDraftChange(event.target.value)} />
+        <textarea
+          value={item.state.draft}
+          onChange={(event) => onDraftChange(event.target.value)}
+          aria-label={`${item.event.senderName} 답장 초안 편집`}
+        />
       </label>
 
       <div className="actionBar" aria-label="상태 워크플로">
-        <button type="button" onClick={onRegenerateDraft}>선택 톤으로 재생성</button>
-        <button type="button" onClick={() => onStatusChange("drafted")}>초안 저장</button>
-        <button type="button" className="primary" onClick={() => onStatusChange("approved")}>승인</button>
-        <button type="button" onClick={() => onStatusChange("hold")}>보류</button>
-        <button type="button" onClick={() => onStatusChange("ignored")}>무시</button>
-        <button type="button" className="sendMock" onClick={onMockSend}>목업 전송 로그</button>
+        <button type="button" onClick={onRegenerateDraft} aria-label="선택한 답장 톤으로 초안 재생성">선택 톤으로 재생성</button>
+        <button type="button" onClick={() => onStatusChange("drafted")} aria-label="현재 초안을 저장 상태로 표시">초안 저장</button>
+        <button type="button" className="primary" onClick={() => onStatusChange("approved")} aria-label="문의 승인 상태로 변경">승인</button>
+        <button type="button" onClick={() => onStatusChange("hold")} aria-label="문의 보류 상태로 변경">보류</button>
+        <button type="button" onClick={() => onStatusChange("ignored")} aria-label="문의 무시 상태로 변경">무시</button>
+        <button type="button" className="sendMock" onClick={onMockSend} aria-label="실제 전송 없이 목업 전송 기록 추가">목업 전송 로그</button>
       </div>
 
       <div className="sendLog">

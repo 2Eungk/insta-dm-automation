@@ -69,6 +69,7 @@ export function Toolbar({
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder="이름, 핸들, 메시지 검색"
+          aria-label="이름, 핸들, 메시지로 검색"
         />
       </label>
       <label>
@@ -76,6 +77,7 @@ export function Toolbar({
         <select
           value={workspacePreset}
           onChange={(event) => onWorkspacePresetChange(parseWorkspacePreset(event.target.value))}
+          aria-label="워크스페이스 프리셋 선택"
         >
           {WORKSPACE_PRESETS.map((preset) => (
             <option key={preset} value={preset}>
@@ -86,7 +88,11 @@ export function Toolbar({
       </label>
       <label>
         <span>답장 톤</span>
-        <select value={replyTone} onChange={(event) => onReplyToneChange(parseReplyTone(event.target.value))}>
+        <select
+          value={replyTone}
+          onChange={(event) => onReplyToneChange(parseReplyTone(event.target.value))}
+          aria-label="답장 톤 선택"
+        >
           {REPLY_TONES.map((tone) => (
             <option key={tone} value={tone}>
               {REPLY_TONE_LABELS[tone]}
@@ -99,6 +105,7 @@ export function Toolbar({
         <select
           value={classificationFilter}
           onChange={(event) => onClassificationChange(parseClassificationFilter(event.target.value))}
+          aria-label="분류 필터 선택"
         >
           <option value="all">전체 분류</option>
           {CLASSIFICATIONS.map((classification) => (
@@ -113,6 +120,7 @@ export function Toolbar({
         <select
           value={statusFilter}
           onChange={(event) => onStatusChange(parseStatusFilter(event.target.value))}
+          aria-label="상태 필터 선택"
         >
           <option value="all">전체 상태</option>
           {STATUSES.map((status) => (
