@@ -1,0 +1,407 @@
+:root {
+  color: #edf1ee;
+  background: #121416;
+  font-family:
+    "Pretendard Variable",
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(225, 255, 184, 0.08), transparent 28%),
+    radial-gradient(circle at 80% 0%, rgba(111, 188, 169, 0.16), transparent 24%),
+    #121416;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.appShell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 360px);
+  gap: 24px;
+  align-items: end;
+  padding: 30px 0 22px;
+}
+
+.hero h1 {
+  max-width: 760px;
+  margin: 8px 0 12px;
+  color: #f7f4e8;
+  font-size: clamp(2rem, 5vw, 4.8rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 720px;
+  margin: 0;
+  color: #b9c1bb;
+  line-height: 1.7;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #c7f36b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.connectionNotice,
+.toolbar,
+.inbox,
+.detail {
+  border: 1px solid rgba(237, 241, 238, 0.1);
+  background: rgba(28, 31, 33, 0.86);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.connectionNotice {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-left: 3px solid #ffcf5a;
+}
+
+.connectionNotice span,
+.panelHeader p,
+.handle,
+.messagePreview,
+.sendLog p {
+  color: #aeb8b1;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr 220px 180px;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 8px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: #cad1cc;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(237, 241, 238, 0.12);
+  border-radius: 6px;
+  background: #111315;
+  color: #f5f2e9;
+  outline: none;
+}
+
+input,
+select {
+  height: 44px;
+  padding: 0 12px;
+}
+
+textarea {
+  min-height: 250px;
+  padding: 14px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #c7f36b;
+  box-shadow: 0 0 0 3px rgba(199, 243, 107, 0.13);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(330px, 420px) 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.inbox,
+.detail {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.panelHeader,
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.1);
+}
+
+.panelHeader p {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.inboxList {
+  display: grid;
+  max-height: 690px;
+  overflow: auto;
+}
+
+.inboxItem {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.08);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.inboxItem:hover,
+.inboxItem.active {
+  background: rgba(199, 243, 107, 0.08);
+}
+
+.itemTopline,
+.itemMeta,
+.detailBadges,
+.missingBox div,
+.actionBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.itemTopline {
+  justify-content: space-between;
+}
+
+.itemTopline span,
+.handle {
+  font-size: 0.82rem;
+}
+
+.messagePreview {
+  display: -webkit-box;
+  overflow: hidden;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.badge,
+.statusDot,
+.missingBox strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.badge-shooting,
+.badge-quote,
+.badge-schedule {
+  background: #c7f36b;
+  color: #1b2117;
+}
+
+.badge-collaboration {
+  background: #7fd8c0;
+  color: #10231e;
+}
+
+.badge-spam {
+  background: #ff7d6e;
+  color: #2b0d08;
+}
+
+.badge-other {
+  background: #89928c;
+  color: #101314;
+}
+
+.statusDot {
+  background: rgba(237, 241, 238, 0.08);
+  color: #e6ece7;
+}
+
+.status-approved {
+  color: #c7f36b;
+}
+
+.status-hold {
+  color: #ffcf5a;
+}
+
+.status-ignored {
+  color: #a5a8a6;
+}
+
+.detailHeader h2 {
+  margin: 8px 0 6px;
+  color: #f7f4e8;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  letter-spacing: 0;
+}
+
+.detailHeader span {
+  color: #aeb8b1;
+}
+
+.messageBlock,
+.fieldGrid,
+.missingBox,
+.draftEditor,
+.actionBar,
+.sendLog {
+  margin: 18px;
+}
+
+.messageBlock {
+  padding: 18px;
+  border-left: 3px solid #7fd8c0;
+  background: rgba(255, 255, 255, 0.04);
+  line-height: 1.7;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.infoTile {
+  display: grid;
+  gap: 6px;
+  min-height: 82px;
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  background: rgba(18, 20, 22, 0.78);
+}
+
+.infoTile span,
+.missingBox > span,
+.sendLog > span {
+  color: #97a39b;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.infoTile strong {
+  color: #f7f4e8;
+  word-break: keep-all;
+}
+
+.missingBox {
+  display: grid;
+  gap: 10px;
+}
+
+.missingBox strong {
+  background: rgba(255, 207, 90, 0.14);
+  color: #ffdc81;
+}
+
+.actionBar button {
+  min-height: 42px;
+  border: 1px solid rgba(237, 241, 238, 0.12);
+  border-radius: 6px;
+  background: #202426;
+  color: #f7f4e8;
+  font-weight: 900;
+}
+
+.actionBar button {
+  padding: 0 14px;
+}
+
+.actionBar .primary,
+.actionBar .sendMock {
+  border-color: transparent;
+  background: #c7f36b;
+  color: #17200f;
+}
+
+.actionBar .sendMock {
+  background: #7fd8c0;
+}
+
+.sendLog {
+  display: grid;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+  color: #aeb8b1;
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .toolbar,
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .fieldGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .appShell {
+    padding: 16px;
+  }
+
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .panelHeader,
+  .detailHeader {
+    display: grid;
+  }
+}
