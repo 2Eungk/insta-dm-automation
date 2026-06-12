@@ -1,0 +1,203 @@
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 7px;
+  min-height: 118px;
+  padding: 18px;
+  border-radius: 8px;
+}
+
+.summaryCard span {
+  color: #9fa9a3;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.summaryCard strong {
+  color: #f7f4e8;
+  font-size: 2.3rem;
+  line-height: 1;
+}
+
+.summaryCard p {
+  margin: 0;
+  color: #aeb8b1;
+}
+
+.summaryCard.alert {
+  border-color: rgba(255, 125, 110, 0.34);
+}
+
+.summaryCard.positive {
+  border-color: rgba(199, 243, 107, 0.34);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(330px, 420px) 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.inbox,
+.detail {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.panelHeader,
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.1);
+}
+
+.panelHeader p {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.inboxList {
+  display: grid;
+  max-height: 690px;
+  overflow: auto;
+}
+
+.inboxItem {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(237, 241, 238, 0.08);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.inboxItem:hover,
+.inboxItem.active {
+  background: rgba(199, 243, 107, 0.08);
+}
+
+.itemTopline,
+.itemMeta,
+.detailBadges,
+.missingBox div,
+.actionBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.itemTopline {
+  justify-content: space-between;
+}
+
+.itemTopline span,
+.handle {
+  font-size: 0.82rem;
+}
+
+.messagePreview {
+  display: -webkit-box;
+  overflow: hidden;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.badge,
+.statusDot,
+.priorityPill,
+.signalCount,
+.missingBox strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.badge-product,
+.badge-quote,
+.badge-booking {
+  background: #c7f36b;
+  color: #1b2117;
+}
+
+.badge-support {
+  background: #ffcf5a;
+  color: #2b1c07;
+}
+
+.badge-partnership {
+  background: #7fd8c0;
+  color: #10231e;
+}
+
+.badge-spam {
+  background: #ff7d6e;
+  color: #2b0d08;
+}
+
+.badge-other {
+  background: #89928c;
+  color: #101314;
+}
+
+.statusDot {
+  background: rgba(237, 241, 238, 0.08);
+  color: #e6ece7;
+}
+
+.status-approved {
+  color: #c7f36b;
+}
+
+.status-hold {
+  color: #ffcf5a;
+}
+
+.status-ignored {
+  color: #a5a8a6;
+}
+
+.priorityPill {
+  background: rgba(237, 241, 238, 0.08);
+  color: #d8e0dc;
+}
+
+.priority-high {
+  background: rgba(255, 125, 110, 0.16);
+  color: #ffb5aa;
+}
+
+.priority-medium {
+  background: rgba(255, 207, 90, 0.15);
+  color: #ffdc81;
+}
+
+.priority-normal {
+  background: rgba(127, 216, 192, 0.12);
+  color: #a9ead9;
+}
+
+.signalCount {
+  background: rgba(237, 241, 238, 0.06);
+  color: #aeb8b1;
+}

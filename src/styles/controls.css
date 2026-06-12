@@ -1,0 +1,78 @@
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 180px 150px 190px 160px;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 8px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: #cad1cc;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(237, 241, 238, 0.12);
+  border-radius: 6px;
+  background: #111315;
+  color: #f5f2e9;
+  outline: none;
+}
+
+input,
+select {
+  height: 44px;
+  padding: 0 12px;
+}
+
+textarea {
+  min-height: 250px;
+  padding: 14px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #c7f36b;
+  box-shadow: 0 0 0 3px rgba(199, 243, 107, 0.13);
+}
+
+.quickReplyHints {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 8px;
+}
+
+.quickReplyHints > span {
+  color: #cad1cc;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.quickReplyHints div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quickReplyHints em {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(127, 216, 192, 0.24);
+  border-radius: 999px;
+  color: #d8e8e1;
+  background: rgba(127, 216, 192, 0.08);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}

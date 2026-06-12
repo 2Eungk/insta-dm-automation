@@ -9,9 +9,13 @@ export const CLASSIFICATIONS = [
 ] as const
 
 export const STATUSES = ["new", "drafted", "approved", "hold", "ignored"] as const
+export const WORKSPACE_PRESETS = ["generic", "ecommerce", "bookingService", "creatorCommunity", "customerSupport"] as const
+export const REPLY_TONES = ["friendly", "concise", "professional", "casual"] as const
 
 export type Classification = (typeof CLASSIFICATIONS)[number]
 export type Status = (typeof STATUSES)[number]
+export type WorkspacePreset = (typeof WORKSPACE_PRESETS)[number]
+export type ReplyTone = (typeof REPLY_TONES)[number]
 
 export type InstagramEvent = {
   readonly id: string
@@ -63,4 +67,26 @@ export type EventViewModel = {
   readonly event: InstagramEvent
   readonly analysis: Analysis
   readonly state: EventState
+}
+
+export type UserPreferences = {
+  readonly workspacePreset: WorkspacePreset
+  readonly replyTone: ReplyTone
+}
+
+export type ReviewSeverity = "high" | "medium" | "positive" | "neutral"
+
+export type ReviewSignal = {
+  readonly id: string
+  readonly label: string
+  readonly detail: string
+  readonly severity: ReviewSeverity
+}
+
+export type ReviewPriority = "high" | "medium" | "normal"
+
+export type KnowledgeSuggestion = {
+  readonly title: string
+  readonly body: string
+  readonly cue: string
 }

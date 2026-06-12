@@ -1,10 +1,13 @@
 import { CLASSIFICATION_LABELS, MISSING_FIELD_LABELS, STATUS_LABELS } from "../domain/labels"
-import type { EventViewModel, Status } from "../domain/types"
+import { getReviewPriority, getReviewSignals } from "../domain/review"
+import type { EventViewModel, KnowledgeSuggestion, Status } from "../domain/types"
 
 type DetailPanelProps = {
   readonly item: EventViewModel
+  readonly knowledgeSuggestions: readonly KnowledgeSuggestion[]
   readonly onDraftChange: (draft: string) => void
   readonly onStatusChange: (status: Status) => void
+  readonly onRegenerateDraft: () => void
   readonly onMockSend: () => void
 }
 
@@ -21,11 +24,15 @@ function fieldValue(value: string | null): string {
 
 export function DetailPanel({
   item,
+  knowledgeSuggestions,
   onDraftChange,
   onStatusChange,
+  onRegenerateDraft,
   onMockSend,
 }: DetailPanelProps): React.JSX.Element {
   const fields = item.analysis.fields
+  const reviewSignals = getReviewSignals(item)
+  const reviewPriority = getReviewPriority(item)
 
   return (
     <section className="detail" aria-label="문의 상세">
@@ -36,6 +43,9 @@ export function DetailPanel({
           <span>{item.event.senderHandle} · {formatFullDate(item.event.receivedAt)}</span>
         </div>
         <div className="detailBadges">
+          <span className={`priorityPill priority-${reviewPriority}`}>
+            {reviewPriority === "high" ? "High priority" : reviewPriority === "medium" ? "Needs review" : "Normal"}
+          </span>
           <span className={`badge badge-${item.analysis.classification}`}>
             {CLASSIFICATION_LABELS[item.analysis.classification]}
           </span>
@@ -71,12 +81,44 @@ export function DetailPanel({
         </div>
       </div>
 
+      <section className="reviewIntel" aria-label="리뷰 인텔리전스">
+        <header>
+          <span>리스크/우선순위</span>
+          <strong>{reviewSignals.length}개 신호</strong>
+        </header>
+        <div className="signalGrid">
+          {reviewSignals.map((signal) => (
+            <article key={signal.id} className={`signalCard signal-${signal.severity}`}>
+              <strong>{signal.label}</strong>
+              <p>{signal.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="knowledgeBox" aria-label="FAQ 및 지식 매칭">
+        <header>
+          <span>FAQ/지식 매칭</span>
+          <strong>{CLASSIFICATION_LABELS[item.analysis.classification]}</strong>
+        </header>
+        <div className="knowledgeList">
+          {knowledgeSuggestions.map((suggestion) => (
+            <article key={`${suggestion.title}-${suggestion.cue}`}>
+              <span>{suggestion.cue}</span>
+              <strong>{suggestion.title}</strong>
+              <p>{suggestion.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <label className="draftEditor">
         <span>한국어 답장 초안</span>
         <textarea value={item.state.draft} onChange={(event) => onDraftChange(event.target.value)} />
       </label>
 
       <div className="actionBar" aria-label="상태 워크플로">
+        <button type="button" onClick={onRegenerateDraft}>선택 톤으로 재생성</button>
         <button type="button" onClick={() => onStatusChange("drafted")}>초안 저장</button>
         <button type="button" className="primary" onClick={() => onStatusChange("approved")}>승인</button>
         <button type="button" onClick={() => onStatusChange("hold")}>보류</button>

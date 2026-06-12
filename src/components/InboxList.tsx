@@ -1,4 +1,5 @@
 import { CLASSIFICATION_LABELS, STATUS_LABELS } from "../domain/labels"
+import { getReviewPriority, getReviewSignals } from "../domain/review"
 import type { EventViewModel } from "../domain/types"
 
 type InboxListProps = {
@@ -24,29 +25,37 @@ export function InboxList({ events, selectedId, onSelect }: InboxListProps): Rea
         <strong>{events.length}</strong>
       </div>
       <div className="inboxList">
-        {events.map((item) => (
-          <button
-            type="button"
-            key={item.event.id}
-            className={item.event.id === selectedId ? "inboxItem active" : "inboxItem"}
-            onClick={() => onSelect(item.event.id)}
-          >
-            <span className="itemTopline">
-              <strong>{item.event.senderName}</strong>
-              <span>{formatTime(item.event.receivedAt)}</span>
-            </span>
-            <span className="handle">{item.event.senderHandle}</span>
-            <span className="messagePreview">{item.event.message}</span>
-            <span className="itemMeta">
-              <span className={`badge badge-${item.analysis.classification}`}>
-                {CLASSIFICATION_LABELS[item.analysis.classification]}
+        {events.map((item) => {
+          const priority = getReviewPriority(item)
+          const signalCount = getReviewSignals(item).length
+          return (
+            <button
+              type="button"
+              key={item.event.id}
+              className={item.event.id === selectedId ? "inboxItem active" : "inboxItem"}
+              onClick={() => onSelect(item.event.id)}
+            >
+              <span className="itemTopline">
+                <strong>{item.event.senderName}</strong>
+                <span>{formatTime(item.event.receivedAt)}</span>
               </span>
-              <span className={`statusDot status-${item.state.status}`}>
-                {STATUS_LABELS[item.state.status]}
+              <span className="handle">{item.event.senderHandle}</span>
+              <span className="messagePreview">{item.event.message}</span>
+              <span className="itemMeta">
+                <span className={`priorityPill priority-${priority}`}>
+                  {priority === "high" ? "High" : priority === "medium" ? "Review" : "Normal"}
+                </span>
+                <span className={`badge badge-${item.analysis.classification}`}>
+                  {CLASSIFICATION_LABELS[item.analysis.classification]}
+                </span>
+                <span className={`statusDot status-${item.state.status}`}>
+                  {STATUS_LABELS[item.state.status]}
+                </span>
+                <span className="signalCount">{signalCount} signals</span>
               </span>
-            </span>
-          </button>
-        ))}
+            </button>
+          )
+        })}
       </div>
     </section>
   )

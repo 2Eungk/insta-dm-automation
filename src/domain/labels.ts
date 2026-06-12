@@ -1,4 +1,4 @@
-import type { Classification, MissingField, Status } from "./types"
+import type { Classification, MissingField, ReplyTone, Status, WorkspacePreset } from "./types"
 
 export const CLASSIFICATION_LABELS: Record<Classification, string> = {
   product: "상품문의",
@@ -16,6 +16,21 @@ export const STATUS_LABELS: Record<Status, string> = {
   approved: "승인됨",
   hold: "보류",
   ignored: "무시",
+}
+
+export const WORKSPACE_PRESET_LABELS: Record<WorkspacePreset, string> = {
+  generic: "Generic",
+  ecommerce: "Ecommerce",
+  bookingService: "Booking / Service",
+  creatorCommunity: "Creator / Community",
+  customerSupport: "Customer Support",
+}
+
+export const REPLY_TONE_LABELS: Record<ReplyTone, string> = {
+  friendly: "친절한",
+  concise: "간결한",
+  professional: "전문적인",
+  casual: "캐주얼",
 }
 
 export const MISSING_FIELD_LABELS: Record<MissingField, string> = {

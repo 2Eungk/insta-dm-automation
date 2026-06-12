@@ -1,0 +1,38 @@
+@media (max-width: 980px) {
+  .hero,
+  .toolbar,
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .fieldGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summaryGrid,
+  .signalGrid,
+  .knowledgeList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .appShell {
+    padding: 16px;
+  }
+
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid,
+  .signalGrid,
+  .knowledgeList {
+    grid-template-columns: 1fr;
+  }
+
+  .panelHeader,
+  .detailHeader {
+    display: grid;
+  }
+}

@@ -1,11 +1,25 @@
-import { CLASSIFICATION_LABELS, STATUS_LABELS } from "../domain/labels"
-import { CLASSIFICATIONS, STATUSES, type Classification, type Status } from "../domain/types"
+import { CLASSIFICATION_LABELS, REPLY_TONE_LABELS, STATUS_LABELS, WORKSPACE_PRESET_LABELS } from "../domain/labels"
+import {
+  CLASSIFICATIONS,
+  REPLY_TONES,
+  STATUSES,
+  WORKSPACE_PRESETS,
+  type Classification,
+  type ReplyTone,
+  type Status,
+  type WorkspacePreset,
+} from "../domain/types"
 
 type ToolbarProps = {
   readonly query: string
+  readonly workspacePreset: WorkspacePreset
+  readonly replyTone: ReplyTone
+  readonly quickReplies: readonly string[]
   readonly classificationFilter: Classification | "all"
   readonly statusFilter: Status | "all"
   readonly onQueryChange: (query: string) => void
+  readonly onWorkspacePresetChange: (workspacePreset: WorkspacePreset) => void
+  readonly onReplyToneChange: (replyTone: ReplyTone) => void
   readonly onClassificationChange: (classification: Classification | "all") => void
   readonly onStatusChange: (status: Status | "all") => void
 }
@@ -26,16 +40,29 @@ function parseStatusFilter(value: string): Status | "all" {
   return STATUSES.find((status) => status === value) ?? "all"
 }
 
+function parseWorkspacePreset(value: string): WorkspacePreset {
+  return WORKSPACE_PRESETS.find((workspacePreset) => workspacePreset === value) ?? "generic"
+}
+
+function parseReplyTone(value: string): ReplyTone {
+  return REPLY_TONES.find((replyTone) => replyTone === value) ?? "friendly"
+}
+
 export function Toolbar({
   query,
+  workspacePreset,
+  replyTone,
+  quickReplies,
   classificationFilter,
   statusFilter,
   onQueryChange,
+  onWorkspacePresetChange,
+  onReplyToneChange,
   onClassificationChange,
   onStatusChange,
 }: ToolbarProps): React.JSX.Element {
   return (
-    <section className="toolbar" aria-label="필터와 검색">
+    <section className="toolbar" aria-label="워크스페이스 설정과 필터">
       <label className="searchBox">
         <span>검색</span>
         <input
@@ -43,6 +70,29 @@ export function Toolbar({
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder="이름, 핸들, 메시지 검색"
         />
+      </label>
+      <label>
+        <span>프리셋</span>
+        <select
+          value={workspacePreset}
+          onChange={(event) => onWorkspacePresetChange(parseWorkspacePreset(event.target.value))}
+        >
+          {WORKSPACE_PRESETS.map((preset) => (
+            <option key={preset} value={preset}>
+              {WORKSPACE_PRESET_LABELS[preset]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <span>답장 톤</span>
+        <select value={replyTone} onChange={(event) => onReplyToneChange(parseReplyTone(event.target.value))}>
+          {REPLY_TONES.map((tone) => (
+            <option key={tone} value={tone}>
+              {REPLY_TONE_LABELS[tone]}
+            </option>
+          ))}
+        </select>
       </label>
       <label>
         <span>분류</span>
@@ -72,6 +122,14 @@ export function Toolbar({
           ))}
         </select>
       </label>
+      <div className="quickReplyHints" aria-label="프리셋 빠른 답장 예시">
+        <span>빠른 답장 힌트</span>
+        <div>
+          {quickReplies.map((reply) => (
+            <em key={reply}>{reply}</em>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }

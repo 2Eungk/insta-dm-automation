@@ -1,0 +1,101 @@
+:root {
+  color: #edf1ee;
+  background: #121416;
+  font-family:
+    "Pretendard Variable",
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(225, 255, 184, 0.07), transparent 32%),
+    linear-gradient(180deg, #151719 0%, #101214 100%),
+    #121416;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.appShell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 360px);
+  gap: 24px;
+  align-items: end;
+  padding: 30px 0 22px;
+}
+
+.hero h1 {
+  max-width: 760px;
+  margin: 8px 0 12px;
+  color: #f7f4e8;
+  font-size: clamp(2rem, 5vw, 4.8rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 720px;
+  margin: 0;
+  color: #b9c1bb;
+  line-height: 1.7;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #c7f36b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.connectionNotice,
+.toolbar,
+.summaryCard,
+.inbox,
+.detail {
+  border: 1px solid rgba(237, 241, 238, 0.1);
+  background: rgba(28, 31, 33, 0.92);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.connectionNotice {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-left: 3px solid #ffcf5a;
+}
+
+.connectionNotice span,
+.panelHeader p,
+.handle,
+.messagePreview,
+.sendLog p {
+  color: #aeb8b1;
+}

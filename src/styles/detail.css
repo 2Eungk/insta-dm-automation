@@ -1,0 +1,178 @@
+.detailHeader h2 {
+  margin: 8px 0 6px;
+  color: #f7f4e8;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  letter-spacing: 0;
+}
+
+.detailHeader span {
+  color: #aeb8b1;
+}
+
+.messageBlock,
+.fieldGrid,
+.missingBox,
+.reviewIntel,
+.knowledgeBox,
+.draftEditor,
+.actionBar,
+.sendLog {
+  margin: 18px;
+}
+
+.messageBlock {
+  padding: 18px;
+  border-left: 3px solid #7fd8c0;
+  background: rgba(255, 255, 255, 0.04);
+  line-height: 1.7;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.infoTile {
+  display: grid;
+  gap: 6px;
+  min-height: 82px;
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  background: rgba(18, 20, 22, 0.78);
+}
+
+.infoTile span,
+.missingBox > span,
+.sendLog > span {
+  color: #97a39b;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.infoTile strong {
+  color: #f7f4e8;
+  word-break: keep-all;
+}
+
+.missingBox {
+  display: grid;
+  gap: 10px;
+}
+
+.missingBox strong {
+  background: rgba(255, 207, 90, 0.14);
+  color: #ffdc81;
+}
+
+.reviewIntel,
+.knowledgeBox {
+  display: grid;
+  gap: 12px;
+}
+
+.reviewIntel header,
+.knowledgeBox header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.reviewIntel header span,
+.knowledgeBox header span {
+  color: #97a39b;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.reviewIntel header strong,
+.knowledgeBox header strong {
+  color: #f7f4e8;
+  font-size: 0.86rem;
+}
+
+.signalGrid,
+.knowledgeList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.signalCard,
+.knowledgeList article {
+  display: grid;
+  gap: 7px;
+  min-height: 112px;
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  border-radius: 8px;
+  background: rgba(18, 20, 22, 0.72);
+}
+
+.signalCard strong,
+.knowledgeList strong {
+  color: #f7f4e8;
+}
+
+.signalCard p,
+.knowledgeList p {
+  margin: 0;
+  color: #aeb8b1;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.signal-high {
+  border-color: rgba(255, 125, 110, 0.34);
+}
+
+.signal-medium {
+  border-color: rgba(255, 207, 90, 0.28);
+}
+
+.signal-positive {
+  border-color: rgba(199, 243, 107, 0.28);
+}
+
+.knowledgeList span {
+  color: #7fd8c0;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.actionBar button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(237, 241, 238, 0.12);
+  border-radius: 6px;
+  background: #202426;
+  color: #f7f4e8;
+  font-weight: 900;
+}
+
+.actionBar .primary,
+.actionBar .sendMock {
+  border-color: transparent;
+  background: #c7f36b;
+  color: #17200f;
+}
+
+.actionBar .sendMock {
+  background: #7fd8c0;
+}
+
+.sendLog {
+  display: grid;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+  color: #aeb8b1;
+}
