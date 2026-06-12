@@ -50,11 +50,13 @@ export function DetailPanel({
       </div>
 
       <div className="fieldGrid" aria-label="추출 정보">
-        <InfoTile label="촬영종류" value={fieldValue(fields.shootType)} />
-        <InfoTile label="지역" value={fieldValue(fields.location)} />
-        <InfoTile label="희망일" value={fieldValue(fields.preferredDate)} />
-        <InfoTile label="예산" value={fieldValue(fields.budget)} />
+        <InfoTile label="의도/주제" value={fieldValue(fields.topic)} />
+        <InfoTile label="상품/서비스" value={fieldValue(fields.productOrService)} />
+        <InfoTile label="지역/채널" value={fieldValue(fields.locationOrChannel)} />
+        <InfoTile label="요청 일시" value={fieldValue(fields.requestedDateTime)} />
+        <InfoTile label="예산/가격" value={fieldValue(fields.budgetOrPrice)} />
         <InfoTile label="연락처" value={fieldValue(fields.contact)} />
+        <InfoTile label="주문/예약번호" value={fieldValue(fields.orderOrReservationRef)} />
         <InfoTile label="신뢰도" value={`${Math.round(item.analysis.confidence * 100)}%`} />
       </div>
 

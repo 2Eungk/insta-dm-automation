@@ -237,14 +237,19 @@ textarea:focus {
   font-weight: 900;
 }
 
-.badge-shooting,
+.badge-product,
 .badge-quote,
-.badge-schedule {
+.badge-booking {
   background: #c7f36b;
   color: #1b2117;
 }
 
-.badge-collaboration {
+.badge-support {
+  background: #ffcf5a;
+  color: #2b1c07;
+}
+
+.badge-partnership {
   background: #7fd8c0;
   color: #10231e;
 }

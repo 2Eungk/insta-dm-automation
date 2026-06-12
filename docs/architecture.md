@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build a local-first Instagram DM/comment inquiry assistant for filming work.
+Build a local-first Instagram DM/comment review assistant for generic small-business and creator social inboxes.
 
 Initial mode is **human-in-the-loop**: classify incoming messages, extract lead details, draft a reply, and let the user approve or edit before any real send.
 
@@ -13,7 +13,7 @@ Initial mode is **human-in-the-loop**: classify incoming messages, extract lead 
 - Mock Instagram DM/comment events
 - Inquiry type classification
 - Lead field extraction
-- Korean filming reply draft templates
+- Neutral Korean business reply draft templates
 - Status workflow: `new`, `drafted`, `approved`, `ignored`
 - No real Meta tokens or outbound send
 
@@ -37,10 +37,10 @@ Normalizer
   -> normalize DMs/comments into one event shape
 
 Classifier
-  -> filming inquiry / price / schedule / collaboration / spam / other
+  -> product inquiry / price or quote / booking or schedule / support or complaint / partnership / spam / other
 
 Lead Extractor
-  -> project type, date, location, budget, deliverable, contact hints
+  -> intent, product or service, date/time, location or channel, price or budget, contact, order or reservation reference
 
 Reply Draft Engine
   -> Korean reply template + missing-info question
@@ -99,7 +99,7 @@ Build MVP 0.1 + 0.2 as a local React/Vite app:
 
 - mock inbox data
 - classifier/extractor functions with tests
-- reply templates for filming inquiries
+- reply templates for generic social inbox inquiries
 - dashboard UI
 - localStorage persistence
 - mock send log

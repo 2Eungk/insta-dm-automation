@@ -1,14 +1,14 @@
 # Insta DM Automation
 
-Local-first Instagram DM/comment review dashboard for filming inquiries. This repo intentionally uses mock events only: no Meta API, no secrets, no backend, and no real Instagram sending.
+Local-first Instagram DM/comment review dashboard for generic social inbox automation. This repo intentionally uses mock events only: no Meta API, no secrets, no backend, and no real Instagram sending.
 
 ## Features
 
 - Vite + React + TypeScript single-page app
 - Mock Instagram DM/comment inbox
-- Classifications: 촬영문의, 견적문의, 일정문의, 협업, 스팸, 기타
-- Extracted lead fields: 촬영종류, 지역, 희망일, 예산, 연락처, 누락정보
-- Korean draft reply generation in a FlowStore/video director tone
+- Classifications: 상품문의, 가격/견적, 예약/일정, 고객지원/불만, 제휴/협업, 스팸, 기타
+- Extracted fields: 의도/주제, 상품/서비스, 지역/채널, 요청 일시, 예산/가격, 연락처, 주문/예약번호, 누락정보
+- Neutral Korean business-tone draft replies with missing-info questions
 - Human-in-the-loop statuses: 신규, 초안작성, 승인됨, 보류, 무시
 - Editable drafts, mock approve/send-log, localStorage persistence
 - Search and classification/status filters

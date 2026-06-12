@@ -1,8 +1,9 @@
 export const CLASSIFICATIONS = [
-  "shooting",
+  "product",
   "quote",
-  "schedule",
-  "collaboration",
+  "booking",
+  "support",
+  "partnership",
   "spam",
   "other",
 ] as const
@@ -22,15 +23,24 @@ export type InstagramEvent = {
 }
 
 export type ExtractedFields = {
-  readonly shootType: string | null
-  readonly location: string | null
-  readonly preferredDate: string | null
-  readonly budget: string | null
+  readonly topic: string | null
+  readonly productOrService: string | null
+  readonly locationOrChannel: string | null
+  readonly requestedDateTime: string | null
+  readonly budgetOrPrice: string | null
   readonly contact: string | null
+  readonly orderOrReservationRef: string | null
   readonly missing: readonly MissingField[]
 }
 
-export type MissingField = "shootType" | "location" | "preferredDate" | "budget" | "contact"
+export type MissingField =
+  | "topic"
+  | "productOrService"
+  | "locationOrChannel"
+  | "requestedDateTime"
+  | "budgetOrPrice"
+  | "contact"
+  | "orderOrReservationRef"
 
 export type Analysis = {
   readonly classification: Classification

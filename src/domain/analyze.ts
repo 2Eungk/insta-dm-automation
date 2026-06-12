@@ -7,6 +7,6 @@ export function analyzeEvent(event: InstagramEvent): Analysis {
   return {
     classification: classification.classification,
     confidence: classification.confidence,
-    fields: extractFields(event.message),
+    fields: extractFields(event.message, classification.classification),
   }
 }

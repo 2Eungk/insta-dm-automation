@@ -102,11 +102,11 @@ export function App(): React.JSX.Element {
     <main className="appShell">
       <header className="hero">
         <div>
-          <p className="eyebrow">FlowStore DM Review Desk</p>
-          <h1>현장형 Instagram 문의 응대 보드</h1>
+          <p className="eyebrow">Social Inbox Review Desk</p>
+          <h1>Instagram DM·댓글 자동 검토 보드</h1>
           <p>
-            DM과 댓글을 로컬 목업 데이터로 분류하고, 누락 정보를 확인한 뒤 사람이 최종 승인하는
-            초안 워크플로입니다.
+            작은 비즈니스와 크리에이터가 DM과 댓글을 분류하고, 누락 정보를 확인한 뒤 사람이 최종 승인하는
+            답장 초안 워크플로입니다.
           </p>
         </div>
         <aside className="connectionNotice">

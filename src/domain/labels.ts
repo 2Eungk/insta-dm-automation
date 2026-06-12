@@ -1,10 +1,11 @@
 import type { Classification, MissingField, Status } from "./types"
 
 export const CLASSIFICATION_LABELS: Record<Classification, string> = {
-  shooting: "촬영문의",
-  quote: "견적문의",
-  schedule: "일정문의",
-  collaboration: "협업",
+  product: "상품문의",
+  quote: "가격/견적",
+  booking: "예약/일정",
+  support: "고객지원/불만",
+  partnership: "제휴/협업",
   spam: "스팸",
   other: "기타",
 }
@@ -18,9 +19,11 @@ export const STATUS_LABELS: Record<Status, string> = {
 }
 
 export const MISSING_FIELD_LABELS: Record<MissingField, string> = {
-  shootType: "촬영종류",
-  location: "지역",
-  preferredDate: "희망일",
-  budget: "예산",
+  topic: "의도/주제",
+  productOrService: "상품/서비스",
+  locationOrChannel: "지역/채널",
+  requestedDateTime: "요청 일시",
+  budgetOrPrice: "예산/가격",
   contact: "연락처",
+  orderOrReservationRef: "주문/예약번호",
 }

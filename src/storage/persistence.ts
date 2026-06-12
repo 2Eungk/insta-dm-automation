@@ -1,7 +1,7 @@
 import { z } from "zod"
 import type { EventState, SendLogEntry, Status } from "../domain/types"
 
-const STORAGE_KEY = "insta-dm-automation:event-state:v1"
+const STORAGE_KEY = "insta-dm-automation:event-state:v2"
 
 const statusSchema = z.enum(["new", "drafted", "approved", "hold", "ignored"])
 const sendLogSchema = z.object({

@@ -1,25 +1,60 @@
-import type { ExtractedFields, MissingField } from "./types"
+import type { Classification, ExtractedFields, MissingField } from "./types"
 
-const shootTypes = ["브랜드 필름", "프로필", "웨딩", "릴스", "워크숍 스케치", "스케치 영상"] as const
-const locations = ["서울", "성수", "강남", "부산", "제주", "홍대", "판교", "인천", "대구"] as const
+const productsAndServices = [
+  "니트",
+  "자켓",
+  "향수",
+  "원데이 클래스",
+  "상담",
+  "배송",
+  "정기구독",
+  "샘플",
+  "세트",
+] as const
+const locationsAndChannels = [
+  "서울",
+  "성수",
+  "강남",
+  "부산",
+  "제주",
+  "홍대",
+  "판교",
+  "인천",
+  "대구",
+  "온라인몰",
+  "스마트스토어",
+  "카카오톡",
+  "매장",
+  "인스타그램",
+] as const
+
+const topicLabels: Record<Classification, string> = {
+  product: "상품 문의",
+  quote: "가격/견적 문의",
+  booking: "예약/일정 문의",
+  support: "고객지원/불만",
+  partnership: "제휴/협업 제안",
+  spam: "스팸 가능성",
+  other: "일반 문의",
+}
 
 function findFirst(text: string, candidates: readonly string[]): string | null {
   return candidates.find((candidate) => text.includes(candidate)) ?? null
 }
 
 function extractDate(text: string): string | null {
-  const explicitDate = /(\d{1,2}\s*월\s*\d{1,2}\s*일|\d{1,2}\/\d{1,2}|\d{1,2}\.\d{1,2})/.exec(text)
+  const explicitDate = /(\d{1,2}\s*월\s*\d{1,2}\s*일|\d{1,2}\/\d{1,2}|\d{1,2}\.\d{1,2}|\d{1,2}\s*시)/.exec(text)
   const explicitDateValue = explicitDate?.[1]
   if (explicitDateValue !== undefined) {
     return explicitDateValue
   }
 
-  const relativeDate = /(다음\s*달|이번\s*주|다음\s*주|주말|날짜는 아직 조율 중)/.exec(text)
+  const relativeDate = /(오늘|내일|다음\s*달|이번\s*주|다음\s*주|주말|날짜는 아직 조율 중|시간은 조율 가능)/.exec(text)
   return relativeDate?.[1] ?? null
 }
 
 function extractBudget(text: string): string | null {
-  const budget = /(\d{2,4}\s*(?:~|-|전후)?\s*\d{0,4}\s*(?:만원|만|정도))/.exec(text)
+  const budget = /(\d{1,4}\s*(?:~|-|전후)?\s*\d{0,4}\s*(?:만원|만|원|정도))/.exec(text)
   return budget?.[1] ?? null
 }
 
@@ -34,21 +69,49 @@ function extractContact(text: string): string | null {
   return email?.[0] ?? null
 }
 
-export function extractFields(message: string): ExtractedFields {
-  const fields = {
-    shootType: findFirst(message, shootTypes),
-    location: findFirst(message, locations),
-    preferredDate: extractDate(message),
-    budget: extractBudget(message),
-    contact: extractContact(message),
+function extractReference(text: string): string | null {
+  const reference = /((?:주문|예약|문의)\s*(?:번호|No\.?|#)?\s*[:：-]?\s*[A-Za-z0-9-]{4,})/.exec(text)
+  return reference?.[1] ?? null
+}
+
+function missingFieldsFor(classification: Classification, fields: Omit<ExtractedFields, "missing">): readonly MissingField[] {
+  const missing: MissingField[] = []
+
+  if (fields.topic === null) missing.push("topic")
+
+  if ((classification === "product" || classification === "quote" || classification === "booking") && fields.productOrService === null) {
+    missing.push("productOrService")
   }
 
-  const missing: MissingField[] = []
-  if (fields.shootType === null) missing.push("shootType")
-  if (fields.location === null) missing.push("location")
-  if (fields.preferredDate === null) missing.push("preferredDate")
-  if (fields.budget === null) missing.push("budget")
-  if (fields.contact === null) missing.push("contact")
+  if (classification === "booking" && fields.requestedDateTime === null) {
+    missing.push("requestedDateTime")
+  }
 
-  return { ...fields, missing }
+  if (classification === "quote" && fields.budgetOrPrice === null) {
+    missing.push("budgetOrPrice")
+  }
+
+  if ((classification === "support" || classification === "booking" || classification === "partnership") && fields.contact === null) {
+    missing.push("contact")
+  }
+
+  if (classification === "support" && fields.orderOrReservationRef === null) {
+    missing.push("orderOrReservationRef")
+  }
+
+  return missing
+}
+
+export function extractFields(message: string, classification: Classification): ExtractedFields {
+  const fields = {
+    topic: topicLabels[classification],
+    productOrService: findFirst(message, productsAndServices),
+    locationOrChannel: findFirst(message, locationsAndChannels),
+    requestedDateTime: extractDate(message),
+    budgetOrPrice: extractBudget(message),
+    contact: extractContact(message),
+    orderOrReservationRef: extractReference(message),
+  }
+
+  return { ...fields, missing: missingFieldsFor(classification, fields) }
 }
