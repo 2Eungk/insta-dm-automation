@@ -56,8 +56,11 @@ export function AnalyticsPanel({ analytics }: AnalyticsPanelProps): React.JSX.El
           <p>Local Analytics</p>
           <strong>{analytics.total} visible</strong>
         </div>
-        <span>샘플과 현재 필터 기준</span>
+        <span title="현재 브라우저의 번들 샘플과 선택된 필터만 집계합니다.">샘플과 현재 필터 기준</span>
       </div>
+      <p className="helperText analyticsHelper">
+        이 수치는 저장된 보기, 검색, 분류/상태 필터가 적용된 화면 범위만 요약합니다.
+      </p>
       <div className="analyticsGrid">
         <DistributionBlock title="Classification" segments={analytics.classificationDistribution} />
         <DistributionBlock title="Priority" segments={analytics.priorityDistribution} />

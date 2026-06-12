@@ -46,13 +46,28 @@ export function SampleDataControls({
       </div>
       <div className="sampleActions" aria-label="샘플 데이터 작업">
         <span>{eventCount} mock events</span>
-        <button type="button" onClick={onResetLocalState} aria-label="현재 샘플의 로컬 상태와 감사 로그 초기화">
+        <button
+          type="button"
+          onClick={onResetLocalState}
+          aria-label="현재 샘플의 로컬 상태와 감사 로그 초기화"
+          title="현재 선택한 샘플의 브라우저 저장 상태만 지우며, 번들 샘플 메시지는 삭제하지 않습니다."
+        >
           현재 샘플 초기화
         </button>
-        <button type="button" onClick={onExportJson} aria-label="현재 리뷰 데이터를 JSON 파일로 내보내기">
+        <button
+          type="button"
+          onClick={onExportJson}
+          aria-label="현재 리뷰 데이터를 JSON 파일로 내보내기"
+          title="local-mock-fixtures로 표시된 브라우저 생성 JSON을 다운로드합니다."
+        >
           JSON 내보내기
         </button>
-        <button type="button" onClick={onExportCsv} aria-label="현재 리뷰 데이터를 CSV 파일로 내보내기">
+        <button
+          type="button"
+          onClick={onExportCsv}
+          aria-label="현재 리뷰 데이터를 CSV 파일로 내보내기"
+          title="local-mock-fixtures로 표시된 브라우저 생성 CSV를 다운로드합니다."
+        >
           CSV 내보내기
         </button>
       </div>

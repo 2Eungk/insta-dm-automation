@@ -1,7 +1,14 @@
 import { CLASSIFICATION_LABELS, STATUS_LABELS } from "./labels"
 import type { AuditLogEntry, EventViewModel, SampleScenario } from "./types"
 
+const EXPORT_SOURCE_CONTEXT = "local-mock-fixtures"
+const EXPORT_NETWORK_POLICY = "browser-download-only"
+const EXPORT_INTEGRATION_STATUS = "no-real-instagram-connection"
+
 type ReviewExportItem = {
+  readonly sourceContext: typeof EXPORT_SOURCE_CONTEXT
+  readonly networkPolicy: typeof EXPORT_NETWORK_POLICY
+  readonly integrationStatus: typeof EXPORT_INTEGRATION_STATUS
   readonly id: string
   readonly channel: string
   readonly senderName: string
@@ -29,11 +36,16 @@ type ReviewExportItem = {
 type ReviewExportPayload = {
   readonly exportedAt: string
   readonly sampleScenario: SampleScenario
-  readonly networkPolicy: "browser-download-only"
+  readonly sourceContext: typeof EXPORT_SOURCE_CONTEXT
+  readonly networkPolicy: typeof EXPORT_NETWORK_POLICY
+  readonly integrationStatus: typeof EXPORT_INTEGRATION_STATUS
   readonly items: readonly ReviewExportItem[]
 }
 
 const CSV_HEADERS = [
+  "sourceContext",
+  "networkPolicy",
+  "integrationStatus",
   "id",
   "channel",
   "senderName",
@@ -66,6 +78,9 @@ function buildExportItems(
   auditLog: readonly AuditLogEntry[],
 ): readonly ReviewExportItem[] {
   return items.map((item) => ({
+    sourceContext: EXPORT_SOURCE_CONTEXT,
+    networkPolicy: EXPORT_NETWORK_POLICY,
+    integrationStatus: EXPORT_INTEGRATION_STATUS,
     id: item.event.id,
     channel: item.event.channel,
     senderName: item.event.senderName,
@@ -99,7 +114,9 @@ export function buildReviewJsonExport(
   const payload: ReviewExportPayload = {
     exportedAt: new Date().toISOString(),
     sampleScenario,
-    networkPolicy: "browser-download-only",
+    sourceContext: EXPORT_SOURCE_CONTEXT,
+    networkPolicy: EXPORT_NETWORK_POLICY,
+    integrationStatus: EXPORT_INTEGRATION_STATUS,
     items: buildExportItems(items, auditLog),
   }
 

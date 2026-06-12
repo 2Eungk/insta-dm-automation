@@ -34,6 +34,17 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - Search and classification/status filters with empty-state guidance
 - Visible notice that Instagram/Meta sending is not connected
 
+## Feature checklist
+
+- [x] Bundled sample inboxes for generic, ecommerce, booking/service, and support demos
+- [x] Local classification, field extraction, SLA labels, saved filter presets, and analytics
+- [x] Human review workflow with editable drafts, approve/hold/ignore states, and mock send logs
+- [x] Local audit trail for review actions, draft regeneration, mock sends, and sample resets
+- [x] Browser-generated JSON/CSV exports stamped as `local-mock-fixtures`
+- [x] Helper copy/tooltips for rules preview, analytics scope, audit log scope, export, and sample reset controls
+- [x] Deterministic smoke check for sample scenarios, filter presets, SLA labels, JSON metadata, and CSV escaping
+- [ ] Real Instagram/Meta API connection, backend storage, secrets, payments, deployment, or automatic sending
+
 ## Demo walkthrough
 
 Use this path for the cleanest local demo:
@@ -73,6 +84,18 @@ Before connecting any real social account, design and implement these outside th
 - Reply template review, escalation paths, opt-out language, and policy checks
 - Monitoring, rate limits, abuse handling, and incident response
 
+## Acceptance criteria
+
+This demo is acceptable when all of the following are true:
+
+- The first viewport clearly says Meta/Instagram sending is not connected.
+- Switching sample scenarios never performs a network request and only uses bundled mock events.
+- Saved filter chips show the expected local subsets for needs-info, high-priority, support, spam, and approved review.
+- Rules preview, analytics, audit trail, sample reset, and export controls explain their local-only scope without blocking the workflow.
+- JSON and CSV exports include `sourceContext: local-mock-fixtures`, `networkPolicy: browser-download-only`, and `integrationStatus: no-real-instagram-connection`.
+- CSV export correctly quotes commas, double quotes, and line breaks in user-visible fields.
+- `npm run check`, `npm run lint`, and `npm run build` complete before handoff.
+
 ## Product-readiness workflow
 
 1. Use the first-run checklist to confirm the app is operating in mock-only mode.
@@ -109,5 +132,5 @@ npm run lint
 npm run build
 ```
 
-`npm run check` runs a deterministic smoke script against the classifier, extractor, JSON export, and CSV export without adding a test framework.
+`npm run check` runs a deterministic smoke script against the classifier, extractor, sample scenarios, saved filter presets, SLA labels, JSON export metadata, and CSV escaping without adding a test framework.
 `npm run build` runs TypeScript first and then creates the Vite production bundle.

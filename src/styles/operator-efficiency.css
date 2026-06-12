@@ -106,7 +106,10 @@
   justify-content: space-between;
   gap: 16px;
   padding: 18px;
-  border-bottom: 1px solid rgba(237, 241, 238, 0.1);
+}
+
+.analyticsHelper {
+  padding-bottom: 0;
 }
 
 .analyticsHeader p,

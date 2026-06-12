@@ -22,8 +22,9 @@ export function ActivityTrail({ entries }: ActivityTrailProps): React.JSX.Elemen
           <p>Audit Trail</p>
           <strong>로컬 활동 로그</strong>
         </div>
-        <span>{entries.length}</span>
+        <span title="이 브라우저의 localStorage에 저장된 데모 활동 수입니다.">{entries.length}</span>
       </header>
+      <p className="helperText">상태 변경, 초안 재생성, 목업 전송, 샘플 초기화만 로컬로 기록합니다.</p>
       <div className="activityList">
         {entries.length === 0 ? (
           <div className="auditEmpty" aria-live="polite">

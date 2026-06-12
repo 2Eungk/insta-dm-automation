@@ -23,8 +23,13 @@ export function RulesPreviewPanel(): React.JSX.Element {
           <p>Rules Preview</p>
           <strong>로컬 자동화 기준</strong>
         </div>
-        <span>편집형 카드</span>
+        <span title="데모용 설명 카드입니다. 실제 자동화 룰 저장소나 Meta 설정을 편집하지 않습니다.">
+          읽기 전용
+        </span>
       </header>
+      <p className="helperText">
+        키워드 기반 분류와 누락정보 질문이 어떻게 초안에 반영되는지 보여주는 로컬 미리보기입니다.
+      </p>
       <div className="ruleCardGrid">
         {AUTOMATION_RULES.map((rule) => (
           <article key={rule.id} className={`ruleCard ${ruleTone(rule.ruleType)}`}>

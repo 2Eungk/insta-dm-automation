@@ -41,6 +41,8 @@ import {
   type StoredState,
 } from "../storage/persistence"
 
+const AUDIT_LOG_LIMIT = 50
+
 function createDefaultState(item: EventViewModel, replyTone: ReplyTone): EventState {
   return createState("new", buildDraftReply(item.event, item.analysis, replyTone), [])
 }
@@ -107,7 +109,7 @@ export function useReviewDashboard(): ReviewDashboard {
   useEffect(() => saveOnboardingVisible(isOnboardingVisible), [isOnboardingVisible])
 
   function appendAudit(action: "status-change" | "draft-regenerated" | "mock-send", eventIds: readonly string[], summary: string): void {
-    setAuditLog((entries) => [createAuditLogEntry(action, eventIds, summary), ...entries].slice(0, 50))
+    setAuditLog((entries) => [createAuditLogEntry(action, eventIds, summary), ...entries].slice(0, AUDIT_LOG_LIMIT))
   }
 
   function updateEventState(eventId: string, updater: (state: EventState) => EventState): void {
@@ -190,7 +192,7 @@ export function useReviewDashboard(): ReviewDashboard {
     setAuditLog((entries) => [
       createAuditLogEntry("sample-reset", sampleEventIds, `${SAMPLE_SCENARIO_LABELS[sampleScenario]} 샘플의 로컬 상태를 초기화했습니다.`),
       ...removeAuditLogForEventIds(entries, sampleEventIds),
-    ].slice(0, 50))
+    ].slice(0, AUDIT_LOG_LIMIT))
     setSelectedBatchIds([])
   }
 
