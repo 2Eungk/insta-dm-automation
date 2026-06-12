@@ -6,7 +6,9 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 
 - Vite + React + TypeScript single-page app
 - Mock Instagram DM/comment inbox
+- Compact demo mode guide for the recommended local walkthrough flow
 - First-run checklist for mock-only workflow, human review-before-send, and production setup gaps
+- Non-functional privacy/safety readiness checklist for future real integrations
 - Switchable sample datasets: generic, ecommerce, booking/service, and customer support
 - Classifications: 상품문의, 가격/견적, 예약/일정, 고객지원/불만, 제휴/협업, 스팸, 기타
 - Extracted fields: 의도/주제, 상품/서비스, 지역/채널, 요청 일시, 예산/가격, 연락처, 주문/예약번호, 누락정보
@@ -27,22 +29,49 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - Keyboard shortcut help panel with local-only shortcuts for search focus, next/previous message, approve, hold, and JSON export
 - Human-in-the-loop statuses: 신규, 초안작성, 승인됨, 보류, 무시
 - Editable drafts, mock approve/send-log, localStorage persistence
+- Safe localStorage fallbacks for browsers that block storage or contain invalid saved state
+- Browser export fallback path when Blob downloads are unavailable or blocked
 - Search and classification/status filters with empty-state guidance
 - Visible notice that Instagram/Meta sending is not connected
+
+## Demo walkthrough
+
+Use this path for the cleanest local demo:
+
+1. Start the app and confirm the hero notice says Meta sending is not connected.
+2. Read the "Demo mode" guide near the top of the dashboard.
+3. Pick a sample scenario in "샘플 시나리오" to switch the bundled inbox.
+4. Use filter chips such as Needs info, High priority, Support queue, or Spam review.
+5. Select one inbox item and inspect classification, extracted fields, missing-info chips, risk signals, FAQ matches, and the Korean draft.
+6. Edit the draft, then use 승인, 보류, 무시, or 목업 전송 로그 to show the human-in-the-loop workflow.
+7. Export JSON or CSV as a browser-generated artifact. The export contains local mock review data only.
 
 ## Local-only behavior
 
 - Workspace preset and reply tone are stored in `localStorage`.
 - First-run checklist visibility and selected sample dataset are stored in `localStorage`.
 - Audit trail entries are stored in `localStorage` and capped locally; they are not sent anywhere.
+- If `localStorage` is blocked, unavailable, over quota, or contains invalid JSON, the app falls back to bundled defaults for the current browser session.
 - Sample scenario switching uses bundled browser data only. It does not fetch, sync, or call external services.
 - Resetting a sample asks for confirmation, then clears only that sample's local states, mock send logs, and related audit entries in the current browser.
-- JSON and CSV exports are generated with `Blob` downloads in the browser. No review data is uploaded.
+- JSON and CSV exports are generated in the browser. The primary path uses `Blob` downloads; if that fails, the app tries a data URL and then a readable local fallback window. No review data is uploaded.
 - Changing the preset updates quick-reply hints and FAQ/knowledge matches only; it does not make the app industry-specific.
 - Changing the reply tone affects newly generated drafts and the "선택 톤으로 재생성" action.
 - Batch actions only change local review statuses. They do not bypass the human-in-the-loop review model.
 - Preset chips, SLA/age labels, analytics, classifications, suggestions, priority signals, and summary counts are computed from local mock data in the browser.
 - No network runtime dependencies, Meta API calls, secrets, backend, payments, or deployment are included.
+
+## Real integration boundaries
+
+The in-app privacy/safety checklist is planning content only. It does not configure Meta permissions, create retention policy, manage operator roles, submit templates for review, or enforce production controls.
+
+Before connecting any real social account, design and implement these outside this demo:
+
+- Meta app review, required scopes, webhook verification, token storage, and account ownership checks
+- Backend audit logging, deletion/retention controls, encryption, and export governance
+- Operator roles for reviewer, approver, admin, and audit-only access
+- Reply template review, escalation paths, opt-out language, and policy checks
+- Monitoring, rate limits, abuse handling, and incident response
 
 ## Product-readiness workflow
 
@@ -75,8 +104,10 @@ Open the local Vite URL printed by the dev server, usually `http://127.0.0.1:517
 ## Check
 
 ```bash
+npm run check
 npm run lint
 npm run build
 ```
 
+`npm run check` runs a deterministic smoke script against the classifier, extractor, JSON export, and CSV export without adding a test framework.
 `npm run build` runs TypeScript first and then creates the Vite production bundle.

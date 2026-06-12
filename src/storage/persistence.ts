@@ -11,6 +11,7 @@ import type {
   WorkspacePreset,
 } from "../domain/types"
 import { SAMPLE_SCENARIOS } from "../domain/types"
+import { readLocalStorage, writeLocalStorage } from "./safeStorage"
 
 const STORAGE_KEY = "insta-dm-automation:event-state:v2"
 const PREFERENCES_KEY = "insta-dm-automation:preferences:v1"
@@ -55,7 +56,8 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
 }
 
 export function loadStoredState(): StoredState {
-  const raw = window.localStorage.getItem(STORAGE_KEY)
+  const stored = readLocalStorage(STORAGE_KEY)
+  const raw = stored.kind === "available" ? stored.value : null
   if (raw === null) {
     return {}
   }
@@ -79,7 +81,7 @@ export function loadStoredState(): StoredState {
 }
 
 export function saveStoredState(state: StoredState): void {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  writeLocalStorage(STORAGE_KEY, JSON.stringify(state))
 }
 
 export function removeStoredStateForEventIds(state: StoredState, eventIds: readonly string[]): StoredState {
@@ -92,7 +94,8 @@ export function createState(status: Status, draft: string, sentLog: readonly Sen
 }
 
 export function loadUserPreferences(): UserPreferences {
-  const raw = window.localStorage.getItem(PREFERENCES_KEY)
+  const stored = readLocalStorage(PREFERENCES_KEY)
+  const raw = stored.kind === "available" ? stored.value : null
   if (raw === null) {
     return DEFAULT_USER_PREFERENCES
   }
@@ -116,7 +119,7 @@ export function loadUserPreferences(): UserPreferences {
 }
 
 export function saveUserPreferences(preferences: UserPreferences): void {
-  window.localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences))
+  writeLocalStorage(PREFERENCES_KEY, JSON.stringify(preferences))
 }
 
 export function createUserPreferences(workspacePreset: WorkspacePreset, replyTone: ReplyTone): UserPreferences {
@@ -124,7 +127,8 @@ export function createUserPreferences(workspacePreset: WorkspacePreset, replyTon
 }
 
 export function loadAuditLog(): StoredAuditLog {
-  const raw = window.localStorage.getItem(AUDIT_LOG_KEY)
+  const stored = readLocalStorage(AUDIT_LOG_KEY)
+  const raw = stored.kind === "available" ? stored.value : null
   if (raw === null) {
     return []
   }
@@ -148,7 +152,7 @@ export function loadAuditLog(): StoredAuditLog {
 }
 
 export function saveAuditLog(entries: StoredAuditLog): void {
-  window.localStorage.setItem(AUDIT_LOG_KEY, JSON.stringify(entries))
+  writeLocalStorage(AUDIT_LOG_KEY, JSON.stringify(entries))
 }
 
 export function removeAuditLogForEventIds(entries: StoredAuditLog, eventIds: readonly string[]): StoredAuditLog {
@@ -171,17 +175,19 @@ export function createAuditLogEntry(
 }
 
 export function loadSampleScenario(): SampleScenario {
-  const raw = window.localStorage.getItem(SAMPLE_SCENARIO_KEY)
+  const stored = readLocalStorage(SAMPLE_SCENARIO_KEY)
+  const raw = stored.kind === "available" ? stored.value : null
   const parsed = sampleScenarioSchema.safeParse(raw)
   return parsed.success ? parsed.data : "generic"
 }
 
 export function saveSampleScenario(sampleScenario: SampleScenario): void {
-  window.localStorage.setItem(SAMPLE_SCENARIO_KEY, sampleScenario)
+  writeLocalStorage(SAMPLE_SCENARIO_KEY, sampleScenario)
 }
 
 export function loadOnboardingVisible(): boolean {
-  const raw = window.localStorage.getItem(ONBOARDING_VISIBLE_KEY)
+  const stored = readLocalStorage(ONBOARDING_VISIBLE_KEY)
+  const raw = stored.kind === "available" ? stored.value : null
   if (raw === null) {
     return true
   }
@@ -201,5 +207,5 @@ export function loadOnboardingVisible(): boolean {
 }
 
 export function saveOnboardingVisible(isVisible: boolean): void {
-  window.localStorage.setItem(ONBOARDING_VISIBLE_KEY, JSON.stringify(isVisible))
+  writeLocalStorage(ONBOARDING_VISIBLE_KEY, JSON.stringify(isVisible))
 }

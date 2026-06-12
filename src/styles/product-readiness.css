@@ -1,6 +1,8 @@
 .onboardingPanel,
 .onboardingCollapsed,
-.sampleControls {
+.sampleControls,
+.demoGuide,
+.privacyChecklist {
   margin-top: 16px;
   border: 1px solid rgba(237, 241, 238, 0.1);
   border-radius: 8px;
@@ -10,7 +12,9 @@
 
 .onboardingPanel header,
 .onboardingCollapsed,
-.sampleControls {
+.sampleControls,
+.demoGuide,
+.privacyChecklist header {
   display: flex;
   gap: 18px;
   align-items: center;
@@ -18,7 +22,9 @@
   padding: 18px;
 }
 
-.onboardingPanel h2 {
+.onboardingPanel h2,
+.demoGuide h2,
+.privacyChecklist h2 {
   margin: 7px 0 0;
   color: #f7f4e8;
   font-size: 1.35rem;
@@ -65,10 +71,71 @@
 
 .onboardingSteps p,
 .sampleScenarioPicker p,
+.demoGuideLead p,
+.demoSteps span,
+.privacyChecklist p,
 .emptyState p {
   margin: 0;
   color: #aeb8b1;
   line-height: 1.6;
+}
+
+.demoGuide {
+  align-items: stretch;
+}
+
+.demoGuideLead {
+  max-width: 340px;
+}
+
+.demoSteps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(112px, 1fr));
+  gap: 8px;
+  width: min(100%, 860px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demoSteps li,
+.privacyChecklistGrid article {
+  display: grid;
+  gap: 7px;
+  min-height: 118px;
+  padding: 13px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  border-radius: 8px;
+  background: rgba(17, 19, 21, 0.74);
+}
+
+.demoSteps strong,
+.privacyChecklistGrid strong {
+  color: #f7f4e8;
+}
+
+.demoSteps span,
+.privacyChecklist p {
+  font-size: 0.86rem;
+}
+
+.privacyChecklist header span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 207, 90, 0.12);
+  color: #ffcf5a;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.privacyChecklistGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 18px 18px;
 }
 
 .sampleScenarioPicker {

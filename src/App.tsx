@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { AnalyticsPanel } from "./components/AnalyticsPanel"
 import { ActivityTrail } from "./components/ActivityTrail"
+import { DemoGuide } from "./components/DemoGuide"
 import { DetailPanel } from "./components/DetailPanel"
 import { EmptyState } from "./components/EmptyState"
 import { InboxList } from "./components/InboxList"
 import { OnboardingChecklist } from "./components/OnboardingChecklist"
+import { PrivacySafetyChecklist } from "./components/PrivacySafetyChecklist"
 import { RulesPreviewPanel } from "./components/RulesPreviewPanel"
 import { SampleDataControls } from "./components/SampleDataControls"
 import { ShortcutHelpPanel } from "./components/ShortcutHelpPanel"
@@ -142,6 +144,8 @@ export function App(): React.JSX.Element {
         onToggleVisible={dashboard.setIsOnboardingVisible}
       />
 
+      <DemoGuide />
+
       <SampleDataControls
         sampleScenario={dashboard.sampleScenario}
         eventCount={dashboard.sampleEventCount}
@@ -165,6 +169,8 @@ export function App(): React.JSX.Element {
       </section>
 
       <AnalyticsPanel analytics={dashboard.localAnalytics} />
+
+      <PrivacySafetyChecklist />
 
       <section className="operatorDeck" aria-label="운영자 컨트롤과 감사 로그">
         <RulesPreviewPanel />

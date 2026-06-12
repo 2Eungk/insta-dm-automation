@@ -17,13 +17,20 @@
   .qualityGrid,
   .ruleCardGrid,
   .knowledgeList,
-  .onboardingSteps {
+  .onboardingSteps,
+  .demoSteps,
+  .privacyChecklistGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .sampleControls {
+  .sampleControls,
+  .demoGuide {
     display: grid;
     align-items: stretch;
+  }
+
+  .demoGuideLead {
+    max-width: none;
   }
 }
 
@@ -41,12 +48,15 @@
   .qualityGrid,
   .ruleCardGrid,
   .knowledgeList,
-  .onboardingSteps {
+  .onboardingSteps,
+  .demoSteps,
+  .privacyChecklistGrid {
     grid-template-columns: 1fr;
   }
 
   .onboardingPanel header,
-  .onboardingCollapsed {
+  .onboardingCollapsed,
+  .privacyChecklist header {
     display: grid;
   }
 
