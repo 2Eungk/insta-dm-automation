@@ -44,7 +44,10 @@ function statusForSetupError(error: SetupError): ResponsePayload {
 }
 
 function buildAuthorizationUrl(config: Exclude<ReturnType<typeof readOAuthConfig>, SetupError>): string {
-  const authorizationUrl = new URL(`https://www.facebook.com/${config.apiVersion}/dialog/oauth`)
+  const authorizationUrl =
+    config.oauthProvider === "instagram"
+      ? new URL("https://www.instagram.com/oauth/authorize")
+      : new URL(`https://www.facebook.com/${config.apiVersion}/dialog/oauth`)
   authorizationUrl.searchParams.set("client_id", config.appId)
   authorizationUrl.searchParams.set("redirect_uri", config.redirectUri)
   authorizationUrl.searchParams.set("response_type", "code")

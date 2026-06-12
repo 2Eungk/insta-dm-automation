@@ -61,9 +61,28 @@ async function main() {
     assert(missingStart.missing.includes("META_APP_ID"), "missing OAuth env should include META_APP_ID")
 
     const oauthStart = JSON.parse(request("GET", "/auth/meta/start").body)
+    const instagramAuthorizationUrl = new URL(oauthStart.authorizationUrl)
     assert(oauthStart.ok === true, "OAuth start should build a URL when env is set")
-    assert(oauthStart.authorizationUrl.includes("client_id=local-app-id"), "OAuth URL should include app id")
+    assert(instagramAuthorizationUrl.host === "www.instagram.com", "default OAuth URL should use Instagram host")
+    assert(instagramAuthorizationUrl.pathname === "/oauth/authorize", "Instagram OAuth URL should use authorize path")
+    assert(instagramAuthorizationUrl.searchParams.get("client_id") === "local-app-id", "OAuth URL should include app id")
+    assert(instagramAuthorizationUrl.searchParams.get("redirect_uri") === env.META_REDIRECT_URI, "OAuth URL should include redirect URI")
+    assert(instagramAuthorizationUrl.searchParams.get("response_type") === "code", "OAuth URL should request an auth code")
+    assert(
+      instagramAuthorizationUrl.searchParams.get("scope") === "instagram_business_basic,instagram_business_manage_messages,pages_show_list",
+      "OAuth URL should include comma-joined Instagram Business scopes",
+    )
+    assert(instagramAuthorizationUrl.searchParams.get("state") === "local-state", "OAuth URL should include state")
     assert(oauthStart.tokenExchange === "not-implemented-in-step-1", "OAuth start should not exchange tokens")
+
+    const facebookStart = JSON.parse(module.routeMetaRequest({
+      method: "GET",
+      url: new URL("/auth/meta/start", "http://127.0.0.1:8787"),
+      body: {},
+    }, { ...env, META_OAUTH_PROVIDER: "facebook" }).body)
+    const facebookAuthorizationUrl = new URL(facebookStart.authorizationUrl)
+    assert(facebookAuthorizationUrl.host === "www.facebook.com", "Facebook OAuth provider should use Facebook host")
+    assert(facebookAuthorizationUrl.pathname === "/v23.0/dialog/oauth", "Facebook OAuth provider should keep Graph version path")
 
     const missingCodeResponse = request("GET", "/auth/meta/callback?state=local-state")
     const missingCode = JSON.parse(missingCodeResponse.body)
