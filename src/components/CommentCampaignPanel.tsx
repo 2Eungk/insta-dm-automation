@@ -2,11 +2,14 @@ import {
   DEFAULT_COMMENT_CAMPAIGN_CONFIG,
   actionModeLabel,
   assessCommentCampaignSafety,
+  buildCommentCampaignDraftQueue,
   targetModeLabel,
 } from "../domain/commentCampaign"
+import { MOCK_EVENTS } from "../data/mockEvents"
 
 const campaign = DEFAULT_COMMENT_CAMPAIGN_CONFIG
 const safety = assessCommentCampaignSafety(campaign)
+const draftQueue = buildCommentCampaignDraftQueue(MOCK_EVENTS, campaign)
 
 export function CommentCampaignPanel(): React.JSX.Element {
   return (
@@ -65,6 +68,34 @@ export function CommentCampaignPanel(): React.JSX.Element {
           {safety.warnings.map((warning) => <p key={warning}>{warning}</p>)}
         </section>
       </div>
+
+      <section className="commentCampaignQueue" aria-label="댓글 캠페인 초안 큐">
+        <header>
+          <div>
+            <h3>댓글 초안 큐</h3>
+            <p>매칭된 댓글을 공개 답글/DM 초안으로 연결하고, 발송 전 승인 대기로 고정합니다.</p>
+          </div>
+          <span>{draftQueue.length}건 승인 대기</span>
+        </header>
+        {draftQueue.length === 0 ? (
+          <p>현재 샘플에서 조건에 맞는 댓글이 없습니다.</p>
+        ) : (
+          <div className="commentCampaignQueueList">
+            {draftQueue.map((item) => (
+              <article key={item.dedupeKey}>
+                <div>
+                  <strong>{item.event.senderName}</strong>
+                  <span>{item.event.senderHandle}</span>
+                </div>
+                <p>{item.event.message}</p>
+                <small>{item.channels.join(" + ")} · 승인 대기 · {item.safetyNote}</small>
+                {item.publicReplyDraft === null ? null : <blockquote>{item.publicReplyDraft}</blockquote>}
+                {item.dmDraft === null ? null : <blockquote>{item.dmDraft}</blockquote>}
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
     </section>
   )
 }

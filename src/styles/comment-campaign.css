@@ -102,3 +102,58 @@
   background: rgba(255, 110, 110, 0.11);
   color: #ffc6c6;
 }
+
+.commentCampaignQueue {
+  display: grid;
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+
+.commentCampaignQueue h3,
+.commentCampaignQueue p {
+  margin: 0;
+}
+
+.commentCampaignQueue > header {
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  border-radius: 8px;
+  background: rgba(127, 216, 192, 0.06);
+}
+
+.commentCampaignQueueList {
+  display: grid;
+  gap: 10px;
+}
+
+.commentCampaignQueueList article {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  border-radius: 8px;
+  background: rgba(17, 19, 21, 0.82);
+}
+
+.commentCampaignQueueList article > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.commentCampaignQueueList small,
+.commentCampaignQueueList span,
+.commentCampaignQueue p {
+  color: #aeb8b1;
+}
+
+.commentCampaignQueueList blockquote {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid rgba(127, 216, 192, 0.5);
+  border-radius: 6px;
+  background: rgba(237, 241, 238, 0.05);
+  color: #f7f4e8;
+  white-space: pre-wrap;
+}

@@ -30,6 +30,18 @@ export type CommentCampaignSafety = {
   readonly allowedForFriendsBeta: boolean
 }
 
+export type CommentCampaignDraftChannel = "public-reply" | "dm"
+
+export type CommentCampaignDraftQueueItem = {
+  readonly event: InstagramEvent
+  readonly status: "needs-approval"
+  readonly channels: readonly CommentCampaignDraftChannel[]
+  readonly publicReplyDraft: string | null
+  readonly dmDraft: string | null
+  readonly dedupeKey: string
+  readonly safetyNote: string
+}
+
 export const DEFAULT_COMMENT_CAMPAIGN_CONFIG: CommentCampaignConfig = {
   id: "friends-beta-comment-campaign",
   name: "게시글 댓글 캠페인",
@@ -113,4 +125,63 @@ export function targetModeLabel(targetMode: CommentTargetMode): string {
     case "any-commenter":
       return "댓글 단 사람 전체"
   }
+}
+
+function draftChannels(actionMode: CommentActionMode): readonly CommentCampaignDraftChannel[] {
+  switch (actionMode) {
+    case "public-reply-draft":
+      return ["public-reply"]
+    case "dm-draft":
+      return ["dm"]
+    case "public-reply-and-dm-draft":
+      return ["public-reply", "dm"]
+  }
+}
+
+function buildDedupeKey(event: InstagramEvent, campaign: CommentCampaignConfig): string {
+  const mediaId = event.mediaId ?? campaign.mediaId
+  const commentId = event.commentId ?? event.id
+  return `${mediaId}:${commentId}`
+}
+
+function buildPublicReplyDraft(event: InstagramEvent, campaign: CommentCampaignConfig): string | null {
+  if (!draftChannels(campaign.actionMode).includes("public-reply")) {
+    return null
+  }
+  return `${event.senderName}님, 댓글 감사합니다. 자세한 안내는 DM으로 안내드릴게요.`
+}
+
+function buildDmDraft(event: InstagramEvent, campaign: CommentCampaignConfig): string | null {
+  if (!draftChannels(campaign.actionMode).includes("dm")) {
+    return null
+  }
+  return `${event.senderName}님, 남겨주신 댓글 확인했습니다. 댓글 내용: "${event.message}"\n\n원하시는 정보와 진행 방법을 확인해서 안내드릴게요. 이 메시지는 ${campaign.name}에서 만든 초안이며 실제 발송 전 사람이 검토해야 합니다.`
+}
+
+export function buildCommentCampaignDraftQueue(
+  events: readonly InstagramEvent[],
+  campaign: CommentCampaignConfig,
+): readonly CommentCampaignDraftQueueItem[] {
+  const seenDedupeKeys = new Set<string>()
+  return events.flatMap((event) => {
+    if (!commentMatchesCampaign(event, campaign)) {
+      return []
+    }
+
+    const dedupeKey = buildDedupeKey(event, campaign)
+    if (campaign.dedupeByCommentId && seenDedupeKeys.has(dedupeKey)) {
+      return []
+    }
+    seenDedupeKeys.add(dedupeKey)
+
+    return [{
+      event,
+      status: "needs-approval",
+      channels: draftChannels(campaign.actionMode),
+      publicReplyDraft: buildPublicReplyDraft(event, campaign),
+      dmDraft: buildDmDraft(event, campaign),
+      dedupeKey,
+      safetyNote: "자동 발송하지 않음 · 일괄 발송하지 않음 · 사람이 댓글/DM 초안을 승인해야 함",
+    }]
+  })
 }
