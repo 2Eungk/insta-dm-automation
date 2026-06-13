@@ -28,6 +28,13 @@ export type MetaLongLivedTokenExchangeConfig = {
   readonly appSecret: string
 }
 
+export type MetaLiveInboxConfig = {
+  readonly accessToken: string | undefined
+  readonly tokenSource: "long-lived" | "short-lived" | "missing"
+  readonly igUserId: string | undefined
+  readonly apiVersion: string
+}
+
 export type GeneratedMetaOAuthConfig = {
   readonly mode: "generated"
   readonly appId: string
@@ -214,6 +221,19 @@ export function readMetaAccessTokenConfig(env: RuntimeEnv): MetaAccessTokenConfi
 
   return {
     accessToken: requiredValue(env, "META_ACCESS_TOKEN") ?? "",
+    apiVersion: requiredValue(env, "META_GRAPH_API_VERSION") ?? DEFAULT_GRAPH_API_VERSION,
+  }
+}
+
+export function readMetaLiveInboxConfig(env: RuntimeEnv): MetaLiveInboxConfig {
+  const longLivedToken = requiredValue(env, "META_LONG_LIVED_ACCESS_TOKEN")
+  const shortLivedToken = requiredValue(env, "META_ACCESS_TOKEN")
+  const accessToken = longLivedToken ?? shortLivedToken
+
+  return {
+    accessToken,
+    tokenSource: longLivedToken !== undefined ? "long-lived" : shortLivedToken !== undefined ? "short-lived" : "missing",
+    igUserId: requiredValue(env, "META_IG_USER_ID"),
     apiVersion: requiredValue(env, "META_GRAPH_API_VERSION") ?? DEFAULT_GRAPH_API_VERSION,
   }
 }

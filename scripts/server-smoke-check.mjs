@@ -48,7 +48,10 @@ async function main() {
 
     const health = JSON.parse((await request("GET", "/health")).body)
     assert(health.ok === true, "health should return ok")
-    assert(health.outboundCalls === "token-status-and-explicit-long-lived-exchange-routes-only", "health should report limited outbound calls")
+    assert(
+      health.outboundCalls === "token-status-long-lived-exchange-and-read-only-live-diagnostics-only",
+      "health should report limited outbound calls",
+    )
 
     const missingStartResponse = await module.routeMetaRequest({
       method: "GET",

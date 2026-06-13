@@ -5,7 +5,7 @@ import { DemoGuide } from "./components/DemoGuide"
 import { DetailPanel } from "./components/DetailPanel"
 import { EmptyState } from "./components/EmptyState"
 import { InboxList } from "./components/InboxList"
-import { MetaIntegrationReadiness } from "./components/MetaIntegrationReadiness"
+import { MetaConnectionSection } from "./components/MetaConnectionSection"
 import { OnboardingChecklist } from "./components/OnboardingChecklist"
 import { PrivacySafetyChecklist } from "./components/PrivacySafetyChecklist"
 import { RulesPreviewPanel } from "./components/RulesPreviewPanel"
@@ -174,7 +174,7 @@ export function App(): React.JSX.Element {
 
       <AnalyticsPanel analytics={dashboard.localAnalytics} />
 
-      <MetaIntegrationReadiness />
+      <MetaConnectionSection />
 
       <PrivacySafetyChecklist />
 

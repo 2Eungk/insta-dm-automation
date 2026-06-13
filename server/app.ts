@@ -1,7 +1,7 @@
 import { createServer } from "node:http"
 import { routeMetaRequest } from "./routes"
 import type { RuntimeEnv } from "./config"
-import type { ResponsePayload } from "./routes"
+import type { ResponsePayload } from "./http"
 
 type RequestLike = {
   readonly method?: string

@@ -1,7 +1,8 @@
 import { z } from "zod"
 import { readMetaAccessTokenConfig } from "./config"
+import { json } from "./http"
 import type { RuntimeEnv, SetupError } from "./config"
-import type { ResponsePayload } from "./routes"
+import type { ResponsePayload } from "./http"
 
 export type FetchLikeResponse = {
   readonly ok: boolean
@@ -40,14 +41,6 @@ class MetaGraphRequestError extends Error {
   constructor(message: string) {
     super(message)
     this.name = "MetaGraphRequestError"
-  }
-}
-
-function json(statusCode: number, payload: unknown): ResponsePayload {
-  return {
-    statusCode,
-    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
-    body: JSON.stringify(payload),
   }
 }
 

@@ -15,6 +15,6 @@ const port = readPort(process.env["PORT"])
 const server = createMetaServer({ env: process.env })
 
 server.listen(port, "127.0.0.1", () => {
-  console.log(`Meta Step 3 local server listening on http://127.0.0.1:${port}`)
-  console.log("No secrets are logged. Only explicit token-status and long-lived exchange routes perform Meta API calls.")
+  console.log(`Meta Step 4 local server listening on http://127.0.0.1:${port}`)
+  console.log("No secrets are logged. Only explicit token-status, long-lived exchange, and read-only diagnostics routes perform Meta API calls.")
 })
