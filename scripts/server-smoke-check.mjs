@@ -75,6 +75,68 @@ async function main() {
     assert(instagramAuthorizationUrl.searchParams.get("state") === "local-state", "OAuth URL should include state")
     assert(oauthStart.tokenExchange === "not-implemented-in-step-1", "OAuth start should not exchange tokens")
 
+    const embedOverrideStart = JSON.parse(module.routeMetaRequest({
+      method: "GET",
+      url: new URL("/auth/meta/start", "http://127.0.0.1:8787"),
+      body: {},
+    }, {
+      ...env,
+      META_INSTAGRAM_EMBED_URL: "https://www.instagram.com/oauth/authorize?client_id=dashboard-app-id&response_type=code&scope=instagram_business_basic",
+    }).body)
+    const embedOverrideUrl = new URL(embedOverrideStart.authorizationUrl)
+    assert(embedOverrideUrl.host === "www.instagram.com", "Embed override should keep Instagram host")
+    assert(embedOverrideUrl.pathname === "/oauth/authorize", "Embed override should keep Instagram authorize path")
+    assert(embedOverrideUrl.searchParams.get("client_id") === "dashboard-app-id", "Embed override should use dashboard client id")
+    assert(embedOverrideUrl.searchParams.get("redirect_uri") === env.META_REDIRECT_URI, "Embed override should fill missing redirect URI")
+    assert(embedOverrideUrl.searchParams.get("state") === "local-state", "Embed override should fill missing state")
+
+    const embedWithDashboardState = JSON.parse(module.routeMetaRequest({
+      method: "GET",
+      url: new URL("/auth/meta/start", "http://127.0.0.1:8787"),
+      body: {},
+    }, {
+      ...env,
+      META_INSTAGRAM_EMBED_URL:
+        "https://www.instagram.com/oauth/authorize?client_id=dashboard-app-id&redirect_uri=https%3A%2F%2Fdashboard.example%2Fcallback&state=dashboard-state",
+    }).body)
+    const embedWithDashboardStateUrl = new URL(embedWithDashboardState.authorizationUrl)
+    assert(
+      embedWithDashboardStateUrl.searchParams.get("redirect_uri") === "https://dashboard.example/callback",
+      "Embed override should preserve dashboard redirect URI when present",
+    )
+    assert(
+      embedWithDashboardStateUrl.searchParams.get("state") === "dashboard-state",
+      "Embed override should preserve dashboard state when present",
+    )
+
+    const embedWithoutAppId = JSON.parse(module.routeMetaRequest({
+      method: "GET",
+      url: new URL("/auth/meta/start", "http://127.0.0.1:8787"),
+      body: {},
+    }, {
+      META_INSTAGRAM_EMBED_URL:
+        "https://www.instagram.com/oauth/authorize?client_id=dashboard-app-id&redirect_uri=https%3A%2F%2Fdashboard.example%2Fcallback&state=dashboard-state",
+      META_VERIFY_TOKEN: "local-verify-token",
+    }).body)
+    const embedWithoutAppIdUrl = new URL(embedWithoutAppId.authorizationUrl)
+    assert(
+      embedWithoutAppIdUrl.searchParams.get("client_id") === "dashboard-app-id",
+      "Embed override should not require META_APP_ID when the dashboard URL is set",
+    )
+
+    const unsafeEmbedResponse = module.routeMetaRequest({
+      method: "GET",
+      url: new URL("/auth/meta/start", "http://127.0.0.1:8787"),
+      body: {},
+    }, {
+      ...env,
+      META_INSTAGRAM_EMBED_URL:
+        "https://www.instagram.com/oauth/authorize?client_id=dashboard-app-id&code=oauth-code&access_token=token&client_secret=secret",
+    })
+    const unsafeEmbed = JSON.parse(unsafeEmbedResponse.body)
+    assert(unsafeEmbedResponse.statusCode === 400, "unsafe Embed URL should be rejected")
+    assert(unsafeEmbed.error === "invalid-instagram-embed-url", "unsafe Embed URL should report invalid embed URL")
+
     const facebookStart = JSON.parse(module.routeMetaRequest({
       method: "GET",
       url: new URL("/auth/meta/start", "http://127.0.0.1:8787"),

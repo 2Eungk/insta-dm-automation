@@ -92,7 +92,7 @@ Actual Meta connection remains a hard boundary for this repo state. It requires 
 
 The mock adapter contract names the future inputs and event shapes only:
 
-- Required environment variable names: `META_APP_ID`, `META_APP_SECRET`, `META_VERIFY_TOKEN`, `META_REDIRECT_URI`, `META_OAUTH_PROVIDER`, and `META_PAGE_ID`
+- Required environment variable names: `META_INSTAGRAM_EMBED_URL`, `META_APP_ID`, `META_APP_SECRET`, `META_VERIFY_TOKEN`, `META_REDIRECT_URI`, `META_OAUTH_PROVIDER`, and `META_PAGE_ID`
 - Permission candidates to justify in app review: `instagram_business_basic`, `instagram_business_manage_messages`, and `pages_show_list`
 - Webhook fixture coverage: DM message, comment, outgoing message echo, app review malformed payload, and permission-denied error
 - Token lifecycle planning: short-lived OAuth token, backend long-lived token storage, rotation, and revocation handling

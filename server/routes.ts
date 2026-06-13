@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { normalizeMockMetaWebhookPayload } from "../src/domain/metaReadiness"
 import { readOAuthConfig, readVerifyToken } from "./config"
-import type { RuntimeEnv, SetupError } from "./config"
+import type { ConfigError, MetaOAuthConfig, RuntimeEnv } from "./config"
 
 export type ResponsePayload = {
   readonly statusCode: number
@@ -39,11 +39,26 @@ function text(statusCode: number, body: string): ResponsePayload {
   }
 }
 
-function statusForSetupError(error: SetupError): ResponsePayload {
-  return json(503, error)
+function statusForConfigError(error: ConfigError): ResponsePayload {
+  return json(error.error === "setup-required" ? 503 : 400, error)
 }
 
-function buildAuthorizationUrl(config: Exclude<ReturnType<typeof readOAuthConfig>, SetupError>): string {
+function buildInstagramEmbedAuthorizationUrl(config: Extract<MetaOAuthConfig, { readonly mode: "instagram-embed" }>): string {
+  const authorizationUrl = new URL(config.instagramEmbedUrl)
+  if (!authorizationUrl.searchParams.has("redirect_uri") && config.redirectUri !== undefined) {
+    authorizationUrl.searchParams.set("redirect_uri", config.redirectUri)
+  }
+  if (!authorizationUrl.searchParams.has("state") && config.state !== undefined) {
+    authorizationUrl.searchParams.set("state", config.state)
+  }
+  return authorizationUrl.toString()
+}
+
+function buildAuthorizationUrl(config: MetaOAuthConfig): string {
+  if (config.mode === "instagram-embed") {
+    return buildInstagramEmbedAuthorizationUrl(config)
+  }
+
   const authorizationUrl =
     config.oauthProvider === "instagram"
       ? new URL("https://www.instagram.com/oauth/authorize")
@@ -69,7 +84,7 @@ function health(): ResponsePayload {
 function startOAuth(env: RuntimeEnv): ResponsePayload {
   const config = readOAuthConfig(env)
   if ("error" in config) {
-    return statusForSetupError(config)
+    return statusForConfigError(config)
   }
 
   return json(200, {
@@ -124,7 +139,7 @@ function callback(request: RouteRequest): ResponsePayload {
 function verifyWebhook(request: RouteRequest, env: RuntimeEnv): ResponsePayload {
   const verifyToken = readVerifyToken(env)
   if (typeof verifyToken !== "string") {
-    return statusForSetupError(verifyToken)
+    return statusForConfigError(verifyToken)
   }
 
   const mode = request.url.searchParams.get("hub.mode")
