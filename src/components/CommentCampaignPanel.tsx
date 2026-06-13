@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   DEFAULT_COMMENT_CAMPAIGN_CONFIG,
   actionModeLabel,
@@ -10,13 +10,16 @@ import {
   type CommentCampaignDecisionStatus,
 } from "../domain/commentCampaign"
 import { MOCK_EVENTS } from "../data/mockEvents"
+import { loadCommentCampaignDecisions, saveCommentCampaignDecisions } from "../storage/persistence"
 
 const campaign = DEFAULT_COMMENT_CAMPAIGN_CONFIG
 const safety = assessCommentCampaignSafety(campaign)
 const draftQueue = buildCommentCampaignDraftQueue(MOCK_EVENTS, campaign)
 
 export function CommentCampaignPanel(): React.JSX.Element {
-  const [decisions, setDecisions] = useState<CommentCampaignDecisionMap>({})
+  const [decisions, setDecisions] = useState<CommentCampaignDecisionMap>(() => loadCommentCampaignDecisions())
+
+  useEffect(() => saveCommentCampaignDecisions(decisions), [decisions])
 
   function decideQueueItem(dedupeKey: string, status: CommentCampaignDecisionStatus): void {
     setDecisions((currentDecisions) => applyCommentCampaignDecision(currentDecisions, dedupeKey, status))

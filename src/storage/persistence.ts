@@ -11,6 +11,7 @@ import type {
   WorkspacePreset,
 } from "../domain/types"
 import { SAMPLE_SCENARIOS } from "../domain/types"
+import type { CommentCampaignDecisionMap } from "../domain/commentCampaign"
 import { readLocalStorage, writeLocalStorage } from "./safeStorage"
 
 const STORAGE_KEY = "insta-dm-automation:event-state:v2"
@@ -18,6 +19,7 @@ const PREFERENCES_KEY = "insta-dm-automation:preferences:v1"
 const AUDIT_LOG_KEY = "insta-dm-automation:audit-log:v1"
 const SAMPLE_SCENARIO_KEY = "insta-dm-automation:sample-scenario:v1"
 const ONBOARDING_VISIBLE_KEY = "insta-dm-automation:onboarding-visible:v1"
+const COMMENT_CAMPAIGN_DECISIONS_KEY = "insta-dm-automation:comment-campaign-decisions:v1"
 
 const statusSchema = z.enum(["new", "drafted", "approved", "hold", "ignored"])
 const sendLogSchema = z.object({
@@ -47,6 +49,13 @@ const auditLogEntrySchema = z.object({
 const auditLogSchema = z.array(auditLogEntrySchema)
 const sampleScenarioSchema = z.enum(SAMPLE_SCENARIOS)
 const onboardingVisibleSchema = z.boolean()
+const commentCampaignDecisionSchema = z.object({
+  status: z.enum(["approved", "hold"]),
+  sendMode: z.enum(["mock-send-log-only", "blocked"]),
+  auditSummary: z.string(),
+  decidedAt: z.string(),
+})
+const commentCampaignDecisionsSchema = z.record(z.string(), commentCampaignDecisionSchema)
 
 export type StoredState = Readonly<Record<string, EventState>>
 export type StoredAuditLog = readonly AuditLogEntry[]
@@ -208,4 +217,29 @@ export function loadOnboardingVisible(): boolean {
 
 export function saveOnboardingVisible(isVisible: boolean): void {
   writeLocalStorage(ONBOARDING_VISIBLE_KEY, JSON.stringify(isVisible))
+}
+
+export function loadCommentCampaignDecisions(): CommentCampaignDecisionMap {
+  const stored = readLocalStorage(COMMENT_CAMPAIGN_DECISIONS_KEY)
+  const raw = stored.kind === "available" ? stored.value : null
+  if (raw === null) {
+    return {}
+  }
+
+  let parsedJson: unknown
+  try {
+    parsedJson = JSON.parse(raw)
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return {}
+    }
+    throw error
+  }
+
+  const parsed = commentCampaignDecisionsSchema.safeParse(parsedJson)
+  return parsed.success ? parsed.data : {}
+}
+
+export function saveCommentCampaignDecisions(decisions: CommentCampaignDecisionMap): void {
+  writeLocalStorage(COMMENT_CAMPAIGN_DECISIONS_KEY, JSON.stringify(decisions))
 }

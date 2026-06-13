@@ -15,8 +15,9 @@ async function loadModule() {
         import { DEFAULT_COMMENT_CAMPAIGN_CONFIG, applyCommentCampaignDecision, assessCommentCampaignSafety, buildCommentCampaignDraftQueue, commentMatchesCampaign } from "./src/domain/commentCampaign"
         import { normalizeMockMetaWebhookPayload } from "./src/domain/metaReadiness"
         import { CommentCampaignPanel } from "./src/components/CommentCampaignPanel"
+        import { loadCommentCampaignDecisions, saveCommentCampaignDecisions } from "./src/storage/persistence"
         import { routeMetaRequest } from "./server/routes"
-        export { DEFAULT_COMMENT_CAMPAIGN_CONFIG, applyCommentCampaignDecision, assessCommentCampaignSafety, buildCommentCampaignDraftQueue, commentMatchesCampaign, normalizeMockMetaWebhookPayload, routeMetaRequest }
+        export { DEFAULT_COMMENT_CAMPAIGN_CONFIG, applyCommentCampaignDecision, assessCommentCampaignSafety, buildCommentCampaignDraftQueue, commentMatchesCampaign, loadCommentCampaignDecisions, normalizeMockMetaWebhookPayload, routeMetaRequest, saveCommentCampaignDecisions }
         export function renderCommentCampaignPanel() {
           return renderToStaticMarkup(React.createElement(CommentCampaignPanel))
         }
@@ -88,6 +89,21 @@ try {
   assert.equal(heldDecisions[queue[0].dedupeKey].status, "hold")
   assert.equal(heldDecisions[queue[0].dedupeKey].sendMode, "blocked")
   assert.equal(heldDecisions[queue[0].dedupeKey].auditSummary.includes("보류"), true)
+
+  const store = new Map()
+  globalThis.window = {
+    localStorage: {
+      getItem: (key) => store.get(key) ?? null,
+      setItem: (key, value) => store.set(key, value),
+    },
+  }
+  module.saveCommentCampaignDecisions(heldDecisions)
+  assert.deepEqual(module.loadCommentCampaignDecisions(), heldDecisions)
+  store.set("insta-dm-automation:comment-campaign-decisions:v1", "not-json")
+  assert.deepEqual(module.loadCommentCampaignDecisions(), {})
+  store.set("insta-dm-automation:comment-campaign-decisions:v1", JSON.stringify({ bad: { status: "sent" } }))
+  assert.deepEqual(module.loadCommentCampaignDecisions(), {})
+  delete globalThis.window
 
   const readiness = JSON.parse((await module.routeMetaRequest({ method: "GET", url: new URL("/app/readiness", "http://127.0.0.1:8787"), body: {} }, {})).body)
   assert.equal(readiness.commentCampaign.enabled, true)
