@@ -8,6 +8,7 @@ Friends beta web demo URL: https://2eungk.github.io/insta-dm-automation/
 
 ## Features
 
+- Manual paste-to-draft mode for real friend testing without Meta review: paste `이름 | @핸들 | dm/comment | 메시지` and get local classification/drafts
 - Vite + React + TypeScript single-page app
 - Mock Instagram DM/comment inbox
 - Compact demo mode guide for the recommended local walkthrough flow
@@ -53,8 +54,21 @@ Friends beta web demo URL: https://2eungk.github.io/insta-dm-automation/
 - [x] Browser-generated JSON/CSV exports stamped as `local-mock-fixtures`
 - [x] Helper copy/tooltips for rules preview, analytics scope, audit log scope, export, and sample reset controls
 - [x] Deterministic smoke check for sample scenarios, filter presets, SLA labels, JSON metadata, CSV escaping, local config validation, webhook normalization, and dry-run errors
+- [x] Manual paste-to-draft workflow for friend testing with real copied messages and browser-only drafts
 - [x] Static GitHub Pages friends-beta web demo deployment for mock-only browser testing
 - [ ] Real Instagram/Meta sending, backend storage, secrets, payments, webhook persistence, or automatic sending
+
+## Manual working mode
+
+For a friend who wants to try it with real messages before Meta integration:
+
+1. Open the web demo.
+2. Find **실전 붙여넣기**.
+3. Paste one message per line in this format: `이름 | @핸들 | dm/comment | 메시지`.
+4. The browser immediately classifies each line and creates a Korean reply draft.
+5. Use **초안 복사** to copy the draft back into Instagram manually.
+
+This path actually works with copied real DM/comment text, but it still does not log in to Instagram, receive webhooks, upload messages, or send replies automatically.
 
 ## Demo walkthrough
 
