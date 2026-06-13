@@ -1,6 +1,6 @@
 # Meta Connection Step 1: Local OAuth and Webhook Scaffold
 
-This step adds only a local backend scaffold. It does not exchange OAuth codes, store tokens, persist webhook events, send Instagram replies, or call Meta APIs.
+This step adds only a local backend scaffold. It does not exchange OAuth codes, store tokens, persist webhook events, send Instagram replies, or call Meta APIs. Step 2 adds a local read-only token check in `docs/meta-connection-step-2.md`.
 
 ## Local Secret Gate
 
@@ -15,7 +15,7 @@ Never commit `.env`. It is already ignored by git.
    - `META_OAUTH_PROVIDER`: use `instagram` for Instagram Business Login scopes. Omit it to infer `instagram` from `instagram_business_*` scopes, or set `facebook` only for legacy Facebook Login scopes.
    - `META_OAUTH_SCOPES`: optional comma-separated OAuth scopes. The default is `instagram_business_basic,instagram_business_manage_messages,pages_show_list`.
    - `META_VERIFY_TOKEN`: a locally generated random string that you also enter in Meta's webhook setup.
-3. Leave `META_APP_SECRET` in `.env` only for a later token-exchange step. Step 1 does not read it.
+3. Leave `META_APP_SECRET` in `.env` only for a later token-exchange step. Step 1 does not read it. `META_ACCESS_TOKEN` is local-only for Step 2 read-only verification and must never be committed, printed, or shared.
 4. Export the variables before running the local server:
 
 ```sh
@@ -79,4 +79,4 @@ The check script validates:
 - `/webhook/meta` rejects a mismatched verify token.
 - `POST /webhook/meta` returns a dry-run normalized preview from bundled fixtures.
 
-Proceed to Step 2 only after you decide where secrets and long-lived tokens will be stored. Do not add token exchange or Graph API calls to this scaffold.
+Proceed to Step 2 only after you decide where secrets and long-lived tokens will be stored. Step 2 is limited to the read-only `/instagram/me` token check and still does not implement OAuth code exchange, sending, webhook persistence, or token storage.

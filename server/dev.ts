@@ -15,6 +15,6 @@ const port = readPort(process.env["PORT"])
 const server = createMetaServer({ env: process.env })
 
 server.listen(port, "127.0.0.1", () => {
-  console.log(`Meta Step 1 local server listening on http://127.0.0.1:${port}`)
-  console.log("No secrets are logged, no persistence is enabled, and no outbound Meta API calls are made.")
+  console.log(`Meta Step 2 local server listening on http://127.0.0.1:${port}`)
+  console.log("No secrets are logged or persisted. Only GET /instagram/me performs a read-only Meta API call.")
 })

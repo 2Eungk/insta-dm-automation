@@ -1,7 +1,9 @@
 import { z } from "zod"
 import { normalizeMockMetaWebhookPayload } from "../src/domain/metaReadiness"
+import { createDefaultInstagramFetch, instagramMe } from "./instagramTokenStatus"
 import { readOAuthConfig, readVerifyToken } from "./config"
 import type { ConfigError, MetaOAuthConfig, RuntimeEnv } from "./config"
+import type { InstagramTokenStatusDependencies } from "./instagramTokenStatus"
 
 export type ResponsePayload = {
   readonly statusCode: number
@@ -13,6 +15,10 @@ export type RouteRequest = {
   readonly method: string
   readonly url: URL
   readonly body: unknown
+}
+
+export type RouteDependencies = {
+  readonly instagramTokenStatus: InstagramTokenStatusDependencies
 }
 
 const callbackQuerySchema = z.object({
@@ -75,9 +81,9 @@ function health(): ResponsePayload {
   return json(200, {
     ok: true,
     service: "insta-dm-automation-meta-local",
-    step: "meta-connection-step-1",
+    step: "meta-connection-step-2",
     persistence: "disabled",
-    outboundCalls: false,
+    outboundCalls: "token-status-route-only",
   })
 }
 
@@ -176,11 +182,18 @@ function dryRunWebhook(request: RouteRequest): ResponsePayload {
   })
 }
 
-export function routeMetaRequest(request: RouteRequest, env: RuntimeEnv): ResponsePayload {
+export async function routeMetaRequest(
+  request: RouteRequest,
+  env: RuntimeEnv,
+  dependencies: RouteDependencies = { instagramTokenStatus: { fetch: createDefaultInstagramFetch() } },
+): Promise<ResponsePayload> {
   const path = request.url.pathname
 
   if (request.method === "GET" && path === "/health") {
     return health()
+  }
+  if (request.method === "GET" && (path === "/instagram/me" || path === "/auth/meta/token-status")) {
+    return instagramMe(env, dependencies.instagramTokenStatus)
   }
   if (request.method === "GET" && path === "/auth/meta/start") {
     return startOAuth(env)

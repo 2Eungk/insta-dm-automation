@@ -18,6 +18,11 @@ export type InvalidInstagramEmbedUrlError = {
 
 export type ConfigError = SetupError | InvalidInstagramEmbedUrlError
 
+export type MetaAccessTokenConfig = {
+  readonly accessToken: string
+  readonly apiVersion: string
+}
+
 export type GeneratedMetaOAuthConfig = {
   readonly mode: "generated"
   readonly appId: string
@@ -194,4 +199,16 @@ export function readVerifyToken(env: RuntimeEnv): string | SetupError {
     return setupError(missing, "Set META_VERIFY_TOKEN locally to the same value entered in the Meta webhook subscription screen.")
   }
   return requiredValue(env, "META_VERIFY_TOKEN") ?? ""
+}
+
+export function readMetaAccessTokenConfig(env: RuntimeEnv): MetaAccessTokenConfig | SetupError {
+  const missing = missingEnv(env, ["META_ACCESS_TOKEN"])
+  if (missing.length > 0) {
+    return setupError(missing, "Set META_ACCESS_TOKEN only in your local .env, export it into the local server process, and never paste it into source, docs, logs, or tickets.")
+  }
+
+  return {
+    accessToken: requiredValue(env, "META_ACCESS_TOKEN") ?? "",
+    apiVersion: requiredValue(env, "META_GRAPH_API_VERSION") ?? DEFAULT_GRAPH_API_VERSION,
+  }
 }

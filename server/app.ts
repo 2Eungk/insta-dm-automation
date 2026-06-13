@@ -95,7 +95,7 @@ async function handleRequest(request: RequestLike, response: ResponseLike, env: 
 
   try {
     const body = method === "POST" ? await readJsonBody(request) : {}
-    send(response, routeMetaRequest({ method, url, body }, env))
+    send(response, await routeMetaRequest({ method, url, body }, env))
   } catch (error) {
     if (error instanceof Error) {
       send(response, errorPayload(error))
