@@ -1,14 +1,15 @@
 const costChecklist = [
-  "Managed Postgres/Supabase for tenant data and audit logs",
-  "Hosted web/runtime plan with spend caps and log retention",
-  "Production secret manager or KMS for Meta tokens",
-  "Meta app review, business verification, and support process",
+  "Cheapest next path: one Cloud Run service plus a manual admin invite code",
+  "Add Firestore only when tester state or audit history must survive restarts",
+  "Add Secret Manager only before storing real Meta app secrets or token material",
+  "Verify all pricing before enabling billing; keep a stop-and-review budget cap",
 ] as const
 
 const deploymentGates = [
-  "No real sends until approval events and rate limits are enforced",
-  "No webhook subscriptions until replay, dedupe, and deletion policies are tested",
-  "No payments until workspace limits, cancellation, and support paths exist",
+  "3-5 trusted testers only, onboarded manually with explicit friend consent",
+  "Read-only or approval-only; no auto-send and no real webhook subscriptions",
+  "Token deletion path required before any friend connects a real account",
+  "No public marketing until Meta app review and business verification are done",
 ] as const
 
 export function SaasReadinessPanel(): React.JSX.Element {
@@ -16,37 +17,37 @@ export function SaasReadinessPanel(): React.JSX.Element {
     <section className="saasReadinessPanel" aria-labelledby="saas-readiness-title">
       <header>
         <div>
-          <p className="eyebrow">SaaS readiness</p>
-          <h2 id="saas-readiness-title">Server foundation and production gates</h2>
-          <p>Local backend scaffold is allowed. Production deployment, paid services, real webhook subscriptions, and message sending are still gated.</p>
+          <p className="eyebrow">지인 베타 모드</p>
+          <h2 id="saas-readiness-title">Friends beta candidate, not public SaaS</h2>
+          <p>Keep the launch to acquaintances: manual invites, read-only diagnostics, approval-only drafts, and no paid or public infrastructure yet.</p>
         </div>
-        <span>Local only</span>
+        <span>Friends beta only</span>
       </header>
 
       <div className="saasReadinessGrid">
         <article>
-          <strong>Local dev boundary</strong>
-          <p>Uses in-memory or local JSON persistence behind interfaces. DEV_ENCRYPTION_KEY is a placeholder for offline encryption tests only.</p>
+          <strong>Cheapest next path</strong>
+          <p>Start with a single Cloud Run-shaped server and one admin-issued invite code before adding Firebase Auth, Firestore, or Secret Manager.</p>
         </article>
         <article>
-          <strong>Production replacement</strong>
-          <p>Swap storage for Postgres/Supabase, move token encryption to KMS, add tenant-scoped RLS, and keep audit logs immutable.</p>
+          <strong>Beta boundary</strong>
+          <p>Production readiness stays false. Friends beta stays true only while sends, webhook subscriptions, payments, and token exposure are false.</p>
         </article>
         <article>
-          <strong>User-safe inbox import</strong>
-          <p>Live previews import textPresent only. Mock fixture text is redacted in server import previews and raw Meta payloads are not stored.</p>
+          <strong>Tester promise</strong>
+          <p>Use 3-5 trusted testers, manual onboarding, friend consent, and a token deletion path before any real account connection.</p>
         </article>
       </div>
 
       <div className="saasChecklistDeck">
         <section aria-label="Cost checklist">
-          <h3>Cost checklist</h3>
+          <h3>Minimal GCP-ish path</h3>
           {costChecklist.map((item) => (
             <p key={item}>{item}</p>
           ))}
         </section>
         <section aria-label="Deployment gates">
-          <h3>Deployment gates</h3>
+          <h3>Risk boundaries</h3>
           {deploymentGates.map((item) => (
             <p key={item}>{item}</p>
           ))}

@@ -1,12 +1,15 @@
 import { z } from "zod"
 import { MOCK_WEBHOOK_PAYLOADS } from "../src/data/mockWebhookPayloads"
 import { readMetaLiveInboxConfig } from "./config"
+import { createLocalInviteCodeGate } from "./friendsBetaInviteGate"
+import { evaluateFriendsBetaReadiness } from "./friendsBetaReadiness"
 import { json } from "./http"
 import { DEMO_ACCOUNT_ID, createDemoBootstrapSnapshot } from "./saasBootstrap"
 import { createLocalDevTokenEncryption } from "./saasCrypto"
 import { createInMemorySaasStore } from "./saasPersistence"
 import { previewInboxImport } from "./saasWebhook"
 import type { RuntimeEnv } from "./config"
+import type { InviteCodeGate } from "./friendsBetaInviteGate"
 import type { RouteRequest, ResponsePayload } from "./http"
 import type { LiveInboxDependencies } from "./instagramLiveInbox"
 import type { CommentPreview, MessagePreview } from "./instagramLiveInboxParsing"
@@ -16,9 +19,11 @@ import type { InstagramAccount } from "./saasTypes"
 export type SaasRouteDependencies = {
   readonly store?: SaasStore
   readonly liveInbox?: LiveInboxDependencies
+  readonly inviteCodeGate?: InviteCodeGate
 }
 
 const defaultStore = createInMemorySaasStore()
+const defaultInviteCodeGate = createLocalInviteCodeGate()
 
 const livePreviewSchema = z.object({
   messages: z.array(
@@ -45,20 +50,30 @@ const importPreviewSchema = z.discriminatedUnion("source", [
   z.object({ source: z.literal("live-diagnostics"), preview: livePreviewSchema }),
 ])
 
+const inviteValidationSchema = z.object({
+  inviteCode: z.string().min(1),
+  friendLabel: z.string().min(1).optional(),
+})
+
 function readiness(env: RuntimeEnv): ResponsePayload {
   const liveConfig = readMetaLiveInboxConfig(env)
+  const safety = {
+    sendsMessages: false,
+    createsWebhookSubscriptions: false,
+    acceptsPayments: false,
+    persistsRawMetaPayloads: false,
+    exposesTokenValues: false,
+  } as const
+  const friendsBeta = evaluateFriendsBetaReadiness(safety)
+
   return json(200, {
     ok: true,
     service: "insta-dm-automation-saas-local",
     persistence: "in-memory-or-local-json-behind-interface",
     productionReady: false,
-    safety: {
-      sendsMessages: false,
-      createsWebhookSubscriptions: false,
-      acceptsPayments: false,
-      persistsRawMetaPayloads: false,
-      exposesTokenValues: false,
-    },
+    friendsBetaCandidate: friendsBeta.candidate,
+    friendsBeta,
+    safety,
     gates: ["Choose managed Postgres/Supabase", "Install production key management", "Complete Meta app review", "Add billing and tenant limits"],
     localEnv: {
       devEncryptionKeyPresent: env["DEV_ENCRYPTION_KEY"] !== undefined,
@@ -140,6 +155,40 @@ async function importPreview(request: RouteRequest, store: SaasStore): Promise<R
   return json(200, { ok: true, ...previewInboxImport(account, { kind: "live-diagnostics", messages, comments }) })
 }
 
+async function validateFriendsBetaInvite(request: RouteRequest, inviteCodeGate: InviteCodeGate): Promise<ResponsePayload> {
+  const parsed = inviteValidationSchema.safeParse(request.body)
+  if (!parsed.success) {
+    return json(400, {
+      ok: false,
+      error: "invalid-invite-validation",
+      message: "Expected a local inviteCode string. This stub does not create auth, users, or secrets.",
+      invite: {
+        accepted: false,
+        mode: "friends-beta",
+        authCreated: false,
+        codePreview: "[redacted]",
+        reason: "invalid-invite-code",
+      },
+    })
+  }
+
+  const invite = await inviteCodeGate.validate(parsed.data)
+  if (!invite.accepted) {
+    return json(403, {
+      ok: false,
+      error: "invite-code-not-accepted",
+      message: "Invite code was not accepted by the local friends-beta stub.",
+      invite,
+    })
+  }
+
+  return json(200, {
+    ok: true,
+    invite,
+    boundary: "Local invite-code gate only. No real auth, user provisioning, token storage, or external calls.",
+  })
+}
+
 export function routeSaasRequest(
   request: RouteRequest,
   env: RuntimeEnv,
@@ -147,9 +196,13 @@ export function routeSaasRequest(
 ): ResponsePayload | Promise<ResponsePayload> | undefined {
   const path = request.url.pathname
   const store = dependencies.store ?? defaultStore
+  const inviteCodeGate = dependencies.inviteCodeGate ?? defaultInviteCodeGate
 
   if (request.method === "GET" && path === "/app/readiness") {
     return readiness(env)
+  }
+  if (request.method === "POST" && path === "/friends-beta/invite/validate") {
+    return validateFriendsBetaInvite(request, inviteCodeGate)
   }
   if (request.method === "POST" && path === "/saas/bootstrap-demo") {
     return bootstrapDemo(env, store)
