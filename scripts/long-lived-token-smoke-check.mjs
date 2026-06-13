@@ -44,7 +44,7 @@ async function verifyRoute() {
     const missingResponse = await request(module, "/auth/meta/exchange-long-lived", {}, {})
     const missing = JSON.parse(missingResponse.body)
     assert.equal(missingResponse.statusCode, 503)
-    assert.deepEqual(missing.missing, ["META_ACCESS_TOKEN", "META_APP_SECRET"])
+    assert.deepEqual(missing.missing, ["LOCAL_LIVE_META_ENABLED=true"])
 
     let fetchCalled = false
     const dependencies = {
@@ -60,16 +60,16 @@ async function verifyRoute() {
       },
     }
 
-    const dryRun = JSON.parse((await request(module, "/auth/meta/exchange-long-lived?dry_run=true", { META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, dependencies)).body)
+    const dryRun = JSON.parse((await request(module, "/auth/meta/exchange-long-lived?dry_run=true", { LOCAL_LIVE_META_ENABLED: "true", META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, dependencies)).body)
     assert.equal(dryRun.ok, true)
     assert.equal(dryRun.outboundCalls, false)
     assert.equal(fetchCalled, false)
 
-    const tokenReturnResponse = await request(module, "/auth/meta/exchange-long-lived?return_token=true", { META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, dependencies)
+    const tokenReturnResponse = await request(module, "/auth/meta/exchange-long-lived?return_token=true", { LOCAL_LIVE_META_ENABLED: "true", META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, dependencies)
     assert.equal(tokenReturnResponse.statusCode, 400)
     assert.equal(fetchCalled, false)
 
-    const successResponse = await request(module, "/auth/meta/exchange-long-lived", { META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, dependencies)
+    const successResponse = await request(module, "/auth/meta/exchange-long-lived", { LOCAL_LIVE_META_ENABLED: "true", META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, dependencies)
     const success = JSON.parse(successResponse.body)
     assert.equal(fetchCalled, true)
     assert.equal(success.ok, true)
@@ -79,7 +79,7 @@ async function verifyRoute() {
     assert.equal(successResponse.body.includes(appSecret), false)
     assert.equal(successResponse.body.includes(longToken), false)
 
-    const errorResponse = await request(module, "/auth/meta/exchange-long-lived", { META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, {
+    const errorResponse = await request(module, "/auth/meta/exchange-long-lived", { LOCAL_LIVE_META_ENABLED: "true", META_ACCESS_TOKEN: accessToken, META_APP_SECRET: appSecret }, {
       longLivedTokenExchange: {
         fetch: async () => ({
           ok: false,

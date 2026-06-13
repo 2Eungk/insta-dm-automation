@@ -94,6 +94,10 @@ export function missingEnv(env: RuntimeEnv, names: readonly string[]): readonly 
   return names.filter((name) => requiredValue(env, name) === undefined)
 }
 
+export function isLocalLiveMetaEnabled(env: RuntimeEnv): boolean {
+  return requiredValue(env, "LOCAL_LIVE_META_ENABLED") === "true"
+}
+
 export function setupError(missing: readonly string[], nextStep: string): SetupError {
   return {
     ok: false,
@@ -214,6 +218,10 @@ export function readVerifyToken(env: RuntimeEnv): string | SetupError {
 }
 
 export function readMetaAccessTokenConfig(env: RuntimeEnv): MetaAccessTokenConfig | SetupError {
+  if (!isLocalLiveMetaEnabled(env)) {
+    return setupError(["LOCAL_LIVE_META_ENABLED=true"], "Live Meta token routes are disabled by default. Set LOCAL_LIVE_META_ENABLED=true only for the short local testing window, then unset it again.")
+  }
+
   const missing = missingEnv(env, ["META_ACCESS_TOKEN"])
   if (missing.length > 0) {
     return setupError(missing, "Set META_ACCESS_TOKEN only in your local .env, export it into the local server process, and never paste it into source, docs, logs, or tickets.")
@@ -226,6 +234,15 @@ export function readMetaAccessTokenConfig(env: RuntimeEnv): MetaAccessTokenConfi
 }
 
 export function readMetaLiveInboxConfig(env: RuntimeEnv): MetaLiveInboxConfig {
+  if (!isLocalLiveMetaEnabled(env)) {
+    return {
+      accessToken: undefined,
+      tokenSource: "missing",
+      igUserId: undefined,
+      apiVersion: requiredValue(env, "META_GRAPH_API_VERSION") ?? DEFAULT_GRAPH_API_VERSION,
+    }
+  }
+
   const longLivedToken = requiredValue(env, "META_LONG_LIVED_ACCESS_TOKEN")
   const shortLivedToken = requiredValue(env, "META_ACCESS_TOKEN")
   const accessToken = longLivedToken ?? shortLivedToken
@@ -239,6 +256,10 @@ export function readMetaLiveInboxConfig(env: RuntimeEnv): MetaLiveInboxConfig {
 }
 
 export function readMetaLongLivedTokenExchangeConfig(env: RuntimeEnv): MetaLongLivedTokenExchangeConfig | SetupError {
+  if (!isLocalLiveMetaEnabled(env)) {
+    return setupError(["LOCAL_LIVE_META_ENABLED=true"], "Long-lived token exchange is disabled by default. Set LOCAL_LIVE_META_ENABLED=true only while exchanging tokens locally, then unset it again.")
+  }
+
   const missing = missingEnv(env, ["META_ACCESS_TOKEN", "META_APP_SECRET"])
   if (missing.length > 0) {
     return setupError(

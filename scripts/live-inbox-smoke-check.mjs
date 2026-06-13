@@ -60,6 +60,7 @@ async function verifySuccessAndTokenPreference(module) {
   const response = await request(
     module,
     {
+      LOCAL_LIVE_META_ENABLED: "true",
       META_ACCESS_TOKEN: shortToken,
       META_LONG_LIVED_ACCESS_TOKEN: longToken,
       META_IG_USER_ID: "17841400000000000",
@@ -132,7 +133,7 @@ async function verifyPermissionAndSanitization(module) {
   const token = "permission-token"
   const response = await request(
     module,
-    { META_LONG_LIVED_ACCESS_TOKEN: token, META_IG_USER_ID: "17841400000000000" },
+    { LOCAL_LIVE_META_ENABLED: "true", META_LONG_LIVED_ACCESS_TOKEN: token, META_IG_USER_ID: "17841400000000000" },
     {
       liveInbox: {
         fetch: async (url) => {
@@ -161,7 +162,7 @@ async function verifyInvalidTokenStatus(module) {
   const token = "invalid-token"
   const response = await request(
     module,
-    { META_LONG_LIVED_ACCESS_TOKEN: token, META_IG_USER_ID: "17841400000000000" },
+    { LOCAL_LIVE_META_ENABLED: "true", META_LONG_LIVED_ACCESS_TOKEN: token, META_IG_USER_ID: "17841400000000000" },
     {
       liveInbox: {
         fetch: async () => ({

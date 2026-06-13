@@ -56,7 +56,7 @@ function health(): ResponsePayload {
     service: "insta-dm-automation-meta-local",
     step: "meta-connection-step-4",
     persistence: "disabled",
-    outboundCalls: "token-status-long-lived-exchange-and-read-only-live-diagnostics-only",
+    outboundCalls: "disabled-by-default-enable-with-LOCAL_LIVE_META_ENABLED-true-for-short-local-testing",
   })
 }
 

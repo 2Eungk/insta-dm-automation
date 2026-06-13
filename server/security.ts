@@ -19,6 +19,7 @@ export const SECURITY_READINESS = {
   rateLimit: "in-memory-local-window",
   cache: "no-store",
   tokenValuesReturned: false,
+  liveMetaDefault: "disabled-unless-LOCAL_LIVE_META_ENABLED-true",
 } as const
 
 const ALLOWED_ORIGIN_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"])

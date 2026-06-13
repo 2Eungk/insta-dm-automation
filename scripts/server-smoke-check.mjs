@@ -49,8 +49,8 @@ async function main() {
     const health = JSON.parse((await request("GET", "/health")).body)
     assert(health.ok === true, "health should return ok")
     assert(
-      health.outboundCalls === "token-status-long-lived-exchange-and-read-only-live-diagnostics-only",
-      "health should report limited outbound calls",
+      health.outboundCalls === "disabled-by-default-enable-with-LOCAL_LIVE_META_ENABLED-true-for-short-local-testing",
+      "health should report default-disabled live Meta calls",
     )
 
     const missingStartResponse = await module.routeMetaRequest({
@@ -179,7 +179,10 @@ async function main() {
     const tokenStatusMissing = JSON.parse(tokenStatusMissingResponse.body)
     assert(tokenStatusMissingResponse.statusCode === 503, "missing Meta token should be setup-required")
     assert(tokenStatusMissing.error === "setup-required", "missing Meta token should name setup-required")
-    assert(tokenStatusMissing.missing.includes("META_ACCESS_TOKEN"), "missing Meta token should include META_ACCESS_TOKEN")
+    assert(tokenStatusMissing.missing.includes("LOCAL_LIVE_META_ENABLED=true"), "live Meta routes should be disabled by default")
+
+    const tokenStatusDisabledWithToken = JSON.parse((await request("GET", "/instagram/me", {}, { META_ACCESS_TOKEN: "token-still-ignored" })).body)
+    assert(tokenStatusDisabledWithToken.missing.includes("LOCAL_LIVE_META_ENABLED=true"), "env tokens should be ignored until the local live switch is enabled")
 
     const localAccessToken = "local-secret-access-token"
     let requestedToken = ""
@@ -201,7 +204,7 @@ async function main() {
       "GET",
       "/auth/meta/token-status",
       {},
-      { ...env, META_ACCESS_TOKEN: localAccessToken },
+      { ...env, LOCAL_LIVE_META_ENABLED: "true", META_ACCESS_TOKEN: localAccessToken },
       successDependencies,
     )
     const tokenStatusSuccess = JSON.parse(tokenStatusSuccessResponse.body)
@@ -231,7 +234,7 @@ async function main() {
       "GET",
       "/instagram/me",
       {},
-      { ...env, META_ACCESS_TOKEN: localAccessToken },
+      { ...env, LOCAL_LIVE_META_ENABLED: "true", META_ACCESS_TOKEN: localAccessToken },
       errorDependencies,
     )
     const tokenStatusError = JSON.parse(tokenStatusErrorResponse.body)
