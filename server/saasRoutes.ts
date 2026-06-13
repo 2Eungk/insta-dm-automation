@@ -4,6 +4,7 @@ import { readMetaLiveInboxConfig } from "./config"
 import { createLocalInviteCodeGate } from "./friendsBetaInviteGate"
 import { evaluateFriendsBetaReadiness } from "./friendsBetaReadiness"
 import { json } from "./http"
+import { SECURITY_READINESS } from "./security"
 import { DEMO_ACCOUNT_ID, createDemoBootstrapSnapshot } from "./saasBootstrap"
 import { createLocalDevTokenEncryption } from "./saasCrypto"
 import { createInMemorySaasStore } from "./saasPersistence"
@@ -51,8 +52,8 @@ const importPreviewSchema = z.discriminatedUnion("source", [
 ])
 
 const inviteValidationSchema = z.object({
-  inviteCode: z.string().min(1),
-  friendLabel: z.string().min(1).optional(),
+  inviteCode: z.string().min(6).max(64).regex(/^[A-Za-z0-9_-]+$/),
+  friendLabel: z.string().min(1).max(80).optional(),
 })
 
 function readiness(env: RuntimeEnv): ResponsePayload {
@@ -80,6 +81,18 @@ function readiness(env: RuntimeEnv): ResponsePayload {
       metaTokenPresent: liveConfig.accessToken !== undefined,
       tokenSource: liveConfig.tokenSource,
     },
+    security: SECURITY_READINESS,
+  })
+}
+
+function securityReadiness(): ResponsePayload {
+  return json(200, {
+    ok: true,
+    service: "insta-dm-automation-saas-local",
+    productionReady: false,
+    friendsBetaSecurityCandidate: true,
+    security: SECURITY_READINESS,
+    boundary: "Local hardening only. Keep Cloud Run/IAM/Secret Manager rules separate before any real deployment.",
   })
 }
 
@@ -200,6 +213,9 @@ export function routeSaasRequest(
 
   if (request.method === "GET" && path === "/app/readiness") {
     return readiness(env)
+  }
+  if (request.method === "GET" && path === "/app/security") {
+    return securityReadiness()
   }
   if (request.method === "POST" && path === "/friends-beta/invite/validate") {
     return validateFriendsBetaInvite(request, inviteCodeGate)
