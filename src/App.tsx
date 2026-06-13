@@ -114,7 +114,7 @@ export function App(): React.JSX.Element {
     <main className="appShell">
       <header className="hero">
         <div>
-          <p className="eyebrow">Social Inbox Review Desk</p>
+          <p className="eyebrow">Friends beta web demo · Social Inbox Review Desk</p>
           <h1>Instagram DM·댓글 자동 검토 보드</h1>
           <p>
             작은 비즈니스와 크리에이터가 DM과 댓글을 분류하고, 누락 정보를 확인한 뒤 사람이 최종 승인하는

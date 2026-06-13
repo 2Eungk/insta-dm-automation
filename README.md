@@ -2,6 +2,10 @@
 
 Local-first Instagram DM/comment review dashboard for generic social inbox automation. The browser app intentionally uses mock events only. The optional local Meta server has explicit setup/check routes only; it never sends Instagram messages.
 
+Friends beta web demo URL: https://2eungk.github.io/insta-dm-automation/
+
+실제 Instagram/Meta API, 토큰, 백엔드, 자동 발송은 포함하지 않습니다.
+
 ## Features
 
 - Vite + React + TypeScript single-page app
@@ -49,7 +53,8 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - [x] Browser-generated JSON/CSV exports stamped as `local-mock-fixtures`
 - [x] Helper copy/tooltips for rules preview, analytics scope, audit log scope, export, and sample reset controls
 - [x] Deterministic smoke check for sample scenarios, filter presets, SLA labels, JSON metadata, CSV escaping, local config validation, webhook normalization, and dry-run errors
-- [ ] Real Instagram/Meta sending, backend storage, secrets, payments, deployment, webhook persistence, or automatic sending
+- [x] Static GitHub Pages friends-beta web demo deployment for mock-only browser testing
+- [ ] Real Instagram/Meta sending, backend storage, secrets, payments, webhook persistence, or automatic sending
 
 ## Demo walkthrough
 
@@ -173,6 +178,19 @@ npm run dev
 ```
 
 Open the local Vite URL printed by the dev server, usually `http://127.0.0.1:5173`.
+
+## Friends beta web deploy
+
+The GitHub Pages build is a static browser demo for friends-beta testing only:
+
+- URL: https://2eungk.github.io/insta-dm-automation/
+- Build command: `GITHUB_PAGES=true npm run build`
+- Output directory: `dist`
+- Deployment workflow: `.github/workflows/deploy-pages.yml`
+- Data storage: each tester's own browser `localStorage`
+- Network boundary: no real Instagram send, no webhook receiver, no token storage, no backend API
+
+The Vite base path switches to `/insta-dm-automation/` only when `GITHUB_PAGES=true`; local development keeps `/`.
 
 ## Check
 
