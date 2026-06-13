@@ -1,6 +1,6 @@
 # Insta DM Automation
 
-Local-first Instagram DM/comment review dashboard for generic social inbox automation. This repo intentionally uses mock events only: no Meta API, no secrets, no backend, and no real Instagram sending.
+Local-first Instagram DM/comment review dashboard for generic social inbox automation. The browser app intentionally uses mock events only. The optional local Meta server has explicit setup/check routes only; it never sends Instagram messages.
 
 ## Features
 
@@ -49,7 +49,7 @@ Local-first Instagram DM/comment review dashboard for generic social inbox autom
 - [x] Browser-generated JSON/CSV exports stamped as `local-mock-fixtures`
 - [x] Helper copy/tooltips for rules preview, analytics scope, audit log scope, export, and sample reset controls
 - [x] Deterministic smoke check for sample scenarios, filter presets, SLA labels, JSON metadata, CSV escaping, local config validation, webhook normalization, and dry-run errors
-- [ ] Real Instagram/Meta API connection, backend storage, secrets, payments, deployment, or automatic sending
+- [ ] Real Instagram/Meta sending, backend storage, secrets, payments, deployment, webhook persistence, or automatic sending
 
 ## Demo walkthrough
 
@@ -82,17 +82,18 @@ Use this path for the cleanest local demo:
 - Preset chips, SLA/age labels, analytics, classifications, suggestions, priority signals, and summary counts are computed from local mock data in the browser.
 - The Meta readiness contract is static planning data. Environment variable names are placeholders only; no values are read.
 - The webhook dry-run panel uses bundled payload objects only. It does not subscribe to webhooks, receive external requests, mutate the sample inbox, or call Meta.
-- No network runtime dependencies, Meta API calls, secrets, backend, payments, or deployment are included.
+- The optional local Meta server can perform explicit token status and long-lived token exchange calls only when run locally. The browser app does not call Meta.
+- No Instagram sending, webhook persistence, backend storage, payments, or deployment are included.
 
 ## Real integration boundaries
 
 The in-app "Ready before Meta" checklist is planning content only. It does not configure Meta permissions, create a Facebook Page connection, create a webhook endpoint, store tokens, create retention policy, manage operator roles, submit templates for review, or enforce production controls.
 
-Actual Meta connection remains a hard boundary for this repo state. It requires explicit approval, real secrets, a backend design, secure token storage, webhook verification, and production policy work before any code is added.
+Actual Instagram sending remains a hard boundary for this repo state. It requires explicit approval, real secrets, a backend design, secure token storage, webhook verification, and production policy work before any sending code is added.
 
 The mock adapter contract names the future inputs and event shapes only:
 
-- Required environment variable names: `META_INSTAGRAM_EMBED_URL`, `META_APP_ID`, `META_APP_SECRET`, `META_VERIFY_TOKEN`, `META_REDIRECT_URI`, `META_OAUTH_PROVIDER`, and `META_PAGE_ID`
+- Required environment variable names: `META_INSTAGRAM_EMBED_URL`, `META_APP_ID`, `META_APP_SECRET`, `META_ACCESS_TOKEN`, `META_LONG_LIVED_ACCESS_TOKEN`, `META_VERIFY_TOKEN`, `META_REDIRECT_URI`, `META_OAUTH_PROVIDER`, and `META_PAGE_ID`
 - Permission candidates to justify in app review: `instagram_business_basic`, `instagram_business_manage_messages`, and `pages_show_list`
 - Webhook fixture coverage: DM message, comment, outgoing message echo, app review malformed payload, and permission-denied error
 - Token lifecycle planning: short-lived OAuth token, backend long-lived token storage, rotation, and revocation handling
@@ -126,9 +127,9 @@ Do not start real Meta work until every gate below is explicitly approved in wri
 2. Security approval gate: approve backend architecture, encrypted secret storage, token rotation, audit logging, operator roles, and incident response.
 3. Meta app-review gate: approve permission justification, screencast evidence, privacy disclosure, data handling policy, and reviewer test path.
 4. Engineering approval gate: approve a backend webhook service plan, verification token handling, retry/rate-limit behavior, observability, and local-to-production migration plan.
-5. Implementation gate: only after gates 1-4, add real OAuth, webhook server, Meta API client, secrets, network calls, deployment, and production tests in a separate branch/change.
+5. Implementation gate: only after gates 1-4, add real sending, webhook persistence, backend token storage, deployment, and production tests in a separate branch/change.
 
-Until those gates are complete, permitted work is limited to local fixtures, mock adapter contracts, dry-run normalization, README updates, and deterministic checks.
+Until those gates are complete, permitted work is limited to local fixtures, mock adapter contracts, dry-run normalization, explicit local token checks/exchanges, README updates, and deterministic checks.
 
 ## Acceptance criteria
 
@@ -181,5 +182,5 @@ npm run lint
 npm run build
 ```
 
-`npm run check` runs a deterministic smoke script against the classifier, extractor, sample scenarios, saved filter presets, SLA labels, JSON export metadata, CSV escaping, local template/rule config validation, and webhook dry-run normalization without adding a test framework.
+`npm run check` runs deterministic smoke scripts against the classifier, extractor, sample scenarios, saved filter presets, SLA labels, JSON export metadata, CSV escaping, local template/rule config validation, webhook dry-run normalization, and local Meta routes with mocked fetch calls.
 `npm run build` runs TypeScript first and then creates the Vite production bundle.

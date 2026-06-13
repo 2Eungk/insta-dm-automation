@@ -23,6 +23,11 @@ export type MetaAccessTokenConfig = {
   readonly apiVersion: string
 }
 
+export type MetaLongLivedTokenExchangeConfig = {
+  readonly accessToken: string
+  readonly appSecret: string
+}
+
 export type GeneratedMetaOAuthConfig = {
   readonly mode: "generated"
   readonly appId: string
@@ -210,5 +215,20 @@ export function readMetaAccessTokenConfig(env: RuntimeEnv): MetaAccessTokenConfi
   return {
     accessToken: requiredValue(env, "META_ACCESS_TOKEN") ?? "",
     apiVersion: requiredValue(env, "META_GRAPH_API_VERSION") ?? DEFAULT_GRAPH_API_VERSION,
+  }
+}
+
+export function readMetaLongLivedTokenExchangeConfig(env: RuntimeEnv): MetaLongLivedTokenExchangeConfig | SetupError {
+  const missing = missingEnv(env, ["META_ACCESS_TOKEN", "META_APP_SECRET"])
+  if (missing.length > 0) {
+    return setupError(
+      missing,
+      "Set META_ACCESS_TOKEN and META_APP_SECRET only in your local .env, export them into the local server process, and never paste them into source, docs, logs, or tickets.",
+    )
+  }
+
+  return {
+    accessToken: requiredValue(env, "META_ACCESS_TOKEN") ?? "",
+    appSecret: requiredValue(env, "META_APP_SECRET") ?? "",
   }
 }

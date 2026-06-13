@@ -1,9 +1,11 @@
 import { z } from "zod"
 import { normalizeMockMetaWebhookPayload } from "../src/domain/metaReadiness"
 import { createDefaultInstagramFetch, instagramMe } from "./instagramTokenStatus"
+import { createDefaultLongLivedTokenExchangeFetch, exchangeLongLivedToken, longLivedTokenExchangeDryRun } from "./metaLongLivedTokenExchange"
 import { readOAuthConfig, readVerifyToken } from "./config"
 import type { ConfigError, MetaOAuthConfig, RuntimeEnv } from "./config"
 import type { InstagramTokenStatusDependencies } from "./instagramTokenStatus"
+import type { LongLivedTokenExchangeDependencies } from "./metaLongLivedTokenExchange"
 
 export type ResponsePayload = {
   readonly statusCode: number
@@ -18,7 +20,8 @@ export type RouteRequest = {
 }
 
 export type RouteDependencies = {
-  readonly instagramTokenStatus: InstagramTokenStatusDependencies
+  readonly instagramTokenStatus?: InstagramTokenStatusDependencies
+  readonly longLivedTokenExchange?: LongLivedTokenExchangeDependencies
 }
 
 const callbackQuerySchema = z.object({
@@ -81,9 +84,9 @@ function health(): ResponsePayload {
   return json(200, {
     ok: true,
     service: "insta-dm-automation-meta-local",
-    step: "meta-connection-step-2",
+    step: "meta-connection-step-3",
     persistence: "disabled",
-    outboundCalls: "token-status-route-only",
+    outboundCalls: "token-status-and-explicit-long-lived-exchange-routes-only",
   })
 }
 
@@ -182,18 +185,47 @@ function dryRunWebhook(request: RouteRequest): ResponsePayload {
   })
 }
 
+function shouldDryRun(request: RouteRequest): boolean {
+  return request.url.searchParams.get("dry_run") === "true"
+}
+
+function rejectsTokenReturn(request: RouteRequest): ResponsePayload | undefined {
+  const returnToken = request.url.searchParams.get("return_token") ?? "false"
+  if (returnToken === "false") {
+    return undefined
+  }
+
+  return json(400, {
+    ok: false,
+    error: "token-return-disabled",
+    message: "HTTP responses never include access tokens. Use the local CLI if you need to write the token into .env.",
+  })
+}
+
 export async function routeMetaRequest(
   request: RouteRequest,
   env: RuntimeEnv,
-  dependencies: RouteDependencies = { instagramTokenStatus: { fetch: createDefaultInstagramFetch() } },
+  dependencies: RouteDependencies = {
+    instagramTokenStatus: { fetch: createDefaultInstagramFetch() },
+    longLivedTokenExchange: { fetch: createDefaultLongLivedTokenExchangeFetch() },
+  },
 ): Promise<ResponsePayload> {
   const path = request.url.pathname
+  const instagramTokenStatus = dependencies.instagramTokenStatus ?? { fetch: createDefaultInstagramFetch() }
+  const longLivedTokenExchange = dependencies.longLivedTokenExchange ?? { fetch: createDefaultLongLivedTokenExchangeFetch() }
 
   if (request.method === "GET" && path === "/health") {
     return health()
   }
   if (request.method === "GET" && (path === "/instagram/me" || path === "/auth/meta/token-status")) {
-    return instagramMe(env, dependencies.instagramTokenStatus)
+    return instagramMe(env, instagramTokenStatus)
+  }
+  if (request.method === "POST" && path === "/auth/meta/exchange-long-lived") {
+    const tokenReturnError = rejectsTokenReturn(request)
+    if (tokenReturnError !== undefined) {
+      return tokenReturnError
+    }
+    return shouldDryRun(request) ? longLivedTokenExchangeDryRun(env) : exchangeLongLivedToken(env, longLivedTokenExchange)
   }
   if (request.method === "GET" && path === "/auth/meta/start") {
     return startOAuth(env)

@@ -3,6 +3,7 @@ node_modules/
 dist/
 .server/
 .env
+.env.bak
 .env.*
 !.env.example
 .DS_Store
