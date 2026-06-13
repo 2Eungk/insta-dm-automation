@@ -3,9 +3,12 @@ import { normalizeMockMetaWebhookPayload } from "../src/domain/metaReadiness"
 import { exchangeLongLivedToken, longLivedTokenExchangeDryRun } from "./metaLongLivedTokenExchange"
 import { json, text } from "./http"
 import { readOAuthConfig, readVerifyToken } from "./config"
+import { DEMO_ACCOUNT_ID } from "./saasBootstrap"
+import { previewInboxImport } from "./saasWebhook"
 import type { ConfigError, MetaOAuthConfig, RuntimeEnv } from "./config"
 import type { RouteRequest, ResponsePayload } from "./http"
 import type { LongLivedTokenExchangeDependencies } from "./metaLongLivedTokenExchange"
+import type { InstagramAccount } from "./saasTypes"
 
 const callbackQuerySchema = z.object({
   code: z.string().min(1).optional(),
@@ -142,13 +145,36 @@ function verifyWebhook(request: RouteRequest, env: RuntimeEnv): ResponsePayload 
 }
 
 function dryRunWebhook(request: RouteRequest): ResponsePayload {
+  const account: InstagramAccount = {
+    id: DEMO_ACCOUNT_ID,
+    workspaceId: { kind: "workspace-id", value: "workspace_local_demo" },
+    igUserId: "17841400000000000",
+    username: "local_demo_business",
+    connectionStatus: "metadata-only",
+  }
   const normalized = normalizeMockMetaWebhookPayload(request.body, "local-webhook-post")
+  const importPreview = previewInboxImport(account, { kind: "mock-fixture", fixtureId: "local-webhook-post", payload: request.body })
   return json(200, {
     ok: true,
     mode: "dry-run",
     persistence: "disabled",
     outboundCalls: false,
-    normalized,
+    normalized: {
+      events: normalized.events.map((event) => ({
+        id: event.id,
+        channel: event.channel,
+        senderHandle: event.senderHandle,
+        receivedAt: event.receivedAt,
+        textPresent: event.message.length > 0,
+        bodyPreview: "[mock text redacted]",
+      })),
+      issues: normalized.issues,
+    },
+    dedupe: importPreview.webhookEvents.map((event) => ({
+      eventId: event.id,
+      dedupeId: event.dedupeId,
+      payloadStored: event.payloadStored,
+    })),
   })
 }
 

@@ -3,16 +3,19 @@ import { createDefaultInstagramFetch, instagramMe } from "./instagramTokenStatus
 import { createDefaultLiveInboxFetch, liveInboxDiagnostics } from "./instagramLiveInbox"
 import { createDefaultLongLivedTokenExchangeFetch } from "./metaLongLivedTokenExchange"
 import { routeMetaSetupRequest } from "./metaSetupRoutes"
+import { routeSaasRequest } from "./saasRoutes"
 import type { RuntimeEnv } from "./config"
 import type { RouteRequest, ResponsePayload } from "./http"
 import type { InstagramTokenStatusDependencies } from "./instagramTokenStatus"
 import type { LiveInboxDependencies } from "./instagramLiveInbox"
 import type { LongLivedTokenExchangeDependencies } from "./metaLongLivedTokenExchange"
+import type { SaasRouteDependencies } from "./saasRoutes"
 
 export type RouteDependencies = {
   readonly instagramTokenStatus?: InstagramTokenStatusDependencies
   readonly liveInbox?: LiveInboxDependencies
   readonly longLivedTokenExchange?: LongLivedTokenExchangeDependencies
+  readonly saas?: SaasRouteDependencies
 }
 
 function defaultDependencies(): Required<RouteDependencies> {
@@ -20,6 +23,7 @@ function defaultDependencies(): Required<RouteDependencies> {
     instagramTokenStatus: { fetch: createDefaultInstagramFetch() },
     liveInbox: { fetch: createDefaultLiveInboxFetch() },
     longLivedTokenExchange: { fetch: createDefaultLongLivedTokenExchangeFetch() },
+    saas: {},
   }
 }
 
@@ -49,6 +53,11 @@ export async function routeMetaRequest(
   }
   if (request.method === "GET" && (path === "/instagram/live-inbox" || path === "/auth/meta/live-inbox")) {
     return liveInboxDiagnostics(env, liveInbox)
+  }
+
+  const saasRoute = routeSaasRequest(request, env, dependencies.saas)
+  if (saasRoute !== undefined) {
+    return saasRoute
   }
 
   const setupRoute = routeMetaSetupRequest(request, env, longLivedTokenExchange)
