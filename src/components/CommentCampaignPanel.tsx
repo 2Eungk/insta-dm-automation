@@ -1,9 +1,13 @@
+import { useState } from "react"
 import {
   DEFAULT_COMMENT_CAMPAIGN_CONFIG,
   actionModeLabel,
+  applyCommentCampaignDecision,
   assessCommentCampaignSafety,
   buildCommentCampaignDraftQueue,
   targetModeLabel,
+  type CommentCampaignDecisionMap,
+  type CommentCampaignDecisionStatus,
 } from "../domain/commentCampaign"
 import { MOCK_EVENTS } from "../data/mockEvents"
 
@@ -12,6 +16,12 @@ const safety = assessCommentCampaignSafety(campaign)
 const draftQueue = buildCommentCampaignDraftQueue(MOCK_EVENTS, campaign)
 
 export function CommentCampaignPanel(): React.JSX.Element {
+  const [decisions, setDecisions] = useState<CommentCampaignDecisionMap>({})
+
+  function decideQueueItem(dedupeKey: string, status: CommentCampaignDecisionStatus): void {
+    setDecisions((currentDecisions) => applyCommentCampaignDecision(currentDecisions, dedupeKey, status))
+  }
+
   return (
     <section className="commentCampaignPanel" aria-labelledby="comment-campaign-title">
       <header>
@@ -73,7 +83,7 @@ export function CommentCampaignPanel(): React.JSX.Element {
         <header>
           <div>
             <h3>댓글 초안 큐</h3>
-            <p>매칭된 댓글을 공개 답글/DM 초안으로 연결하고, 발송 전 승인 대기로 고정합니다.</p>
+            <p>매칭된 댓글을 공개 답글/DM 초안으로 연결하고, 발송 전 승인 대기로 고정합니다. 승인해도 실제 전송 아님 상태로 기록합니다.</p>
           </div>
           <span>{draftQueue.length}건 승인 대기</span>
         </header>
@@ -81,18 +91,26 @@ export function CommentCampaignPanel(): React.JSX.Element {
           <p>현재 샘플에서 조건에 맞는 댓글이 없습니다.</p>
         ) : (
           <div className="commentCampaignQueueList">
-            {draftQueue.map((item) => (
-              <article key={item.dedupeKey}>
-                <div>
-                  <strong>{item.event.senderName}</strong>
-                  <span>{item.event.senderHandle}</span>
-                </div>
-                <p>{item.event.message}</p>
-                <small>{item.channels.join(" + ")} · 승인 대기 · {item.safetyNote}</small>
-                {item.publicReplyDraft === null ? null : <blockquote>{item.publicReplyDraft}</blockquote>}
-                {item.dmDraft === null ? null : <blockquote>{item.dmDraft}</blockquote>}
-              </article>
-            ))}
+            {draftQueue.map((item) => {
+              const decision = decisions[item.dedupeKey]
+              const statusLabel = decision?.status === "approved" ? "승인됨 · 실제 전송 아님" : decision?.status === "hold" ? "보류됨" : "승인 대기"
+              return (
+                <article key={item.dedupeKey}>
+                  <div>
+                    <strong>{item.event.senderName}</strong>
+                    <span>{item.event.senderHandle}</span>
+                  </div>
+                  <p>{item.event.message}</p>
+                  <small>{item.channels.join(" + ")} · {statusLabel} · {decision?.auditSummary ?? item.safetyNote}</small>
+                  {item.publicReplyDraft === null ? null : <blockquote>{item.publicReplyDraft}</blockquote>}
+                  {item.dmDraft === null ? null : <blockquote>{item.dmDraft}</blockquote>}
+                  <div className="commentCampaignActions" aria-label={`${item.event.senderName} 댓글 캠페인 결정`}>
+                    <button type="button" onClick={() => decideQueueItem(item.dedupeKey, "approved")}>초안 승인</button>
+                    <button type="button" onClick={() => decideQueueItem(item.dedupeKey, "hold")}>보류</button>
+                  </div>
+                </article>
+              )
+            })}
           </div>
         )}
       </section>

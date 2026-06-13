@@ -12,11 +12,11 @@ async function loadModule() {
       contents: `
         import React from "react"
         import { renderToStaticMarkup } from "react-dom/server"
-        import { DEFAULT_COMMENT_CAMPAIGN_CONFIG, assessCommentCampaignSafety, buildCommentCampaignDraftQueue, commentMatchesCampaign } from "./src/domain/commentCampaign"
+        import { DEFAULT_COMMENT_CAMPAIGN_CONFIG, applyCommentCampaignDecision, assessCommentCampaignSafety, buildCommentCampaignDraftQueue, commentMatchesCampaign } from "./src/domain/commentCampaign"
         import { normalizeMockMetaWebhookPayload } from "./src/domain/metaReadiness"
         import { CommentCampaignPanel } from "./src/components/CommentCampaignPanel"
         import { routeMetaRequest } from "./server/routes"
-        export { DEFAULT_COMMENT_CAMPAIGN_CONFIG, assessCommentCampaignSafety, buildCommentCampaignDraftQueue, commentMatchesCampaign, normalizeMockMetaWebhookPayload, routeMetaRequest }
+        export { DEFAULT_COMMENT_CAMPAIGN_CONFIG, applyCommentCampaignDecision, assessCommentCampaignSafety, buildCommentCampaignDraftQueue, commentMatchesCampaign, normalizeMockMetaWebhookPayload, routeMetaRequest }
         export function renderCommentCampaignPanel() {
           return renderToStaticMarkup(React.createElement(CommentCampaignPanel))
         }
@@ -80,6 +80,15 @@ try {
   assert.equal(queue[0].dedupeKey, "ig_media_1:comment-1")
   assert.equal(queue[0].safetyNote.includes("자동 발송하지 않음"), true)
 
+  const approvedDecisions = module.applyCommentCampaignDecision({}, queue[0].dedupeKey, "approved")
+  assert.equal(approvedDecisions[queue[0].dedupeKey].status, "approved")
+  assert.equal(approvedDecisions[queue[0].dedupeKey].sendMode, "mock-send-log-only")
+  assert.equal(approvedDecisions[queue[0].dedupeKey].auditSummary.includes("승인"), true)
+  const heldDecisions = module.applyCommentCampaignDecision(approvedDecisions, queue[0].dedupeKey, "hold")
+  assert.equal(heldDecisions[queue[0].dedupeKey].status, "hold")
+  assert.equal(heldDecisions[queue[0].dedupeKey].sendMode, "blocked")
+  assert.equal(heldDecisions[queue[0].dedupeKey].auditSummary.includes("보류"), true)
+
   const readiness = JSON.parse((await module.routeMetaRequest({ method: "GET", url: new URL("/app/readiness", "http://127.0.0.1:8787"), body: {} }, {})).body)
   assert.equal(readiness.commentCampaign.enabled, true)
   assert.equal(readiness.commentCampaign.config.actionMode, "public-reply-and-dm-draft")
@@ -91,6 +100,9 @@ try {
   assert.equal(html.includes("공개 답글 + DM 초안"), true)
   assert.equal(html.includes("댓글 초안 큐"), true)
   assert.equal(html.includes("승인 대기"), true)
+  assert.equal(html.includes("초안 승인"), true)
+  assert.equal(html.includes("보류"), true)
+  assert.equal(html.includes("실제 전송 아님"), true)
 } finally {
   await rm(tempDir, { force: true, recursive: true })
 }

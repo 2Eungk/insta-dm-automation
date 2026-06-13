@@ -157,3 +157,27 @@
   color: #f7f4e8;
   white-space: pre-wrap;
 }
+
+.commentCampaignActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.commentCampaignActions button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(127, 216, 192, 0.25);
+  border-radius: 999px;
+  background: rgba(127, 216, 192, 0.1);
+  color: #d8e8e1;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.commentCampaignActions button + button {
+  border-color: rgba(255, 208, 107, 0.25);
+  background: rgba(255, 208, 107, 0.08);
+  color: #ffe0a8;
+}
+

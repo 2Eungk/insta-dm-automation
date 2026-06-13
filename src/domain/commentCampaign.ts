@@ -42,6 +42,17 @@ export type CommentCampaignDraftQueueItem = {
   readonly safetyNote: string
 }
 
+export type CommentCampaignDecisionStatus = "approved" | "hold"
+
+export type CommentCampaignDecision = {
+  readonly status: CommentCampaignDecisionStatus
+  readonly sendMode: "mock-send-log-only" | "blocked"
+  readonly auditSummary: string
+  readonly decidedAt: string
+}
+
+export type CommentCampaignDecisionMap = Record<string, CommentCampaignDecision>
+
 export const DEFAULT_COMMENT_CAMPAIGN_CONFIG: CommentCampaignConfig = {
   id: "friends-beta-comment-campaign",
   name: "게시글 댓글 캠페인",
@@ -184,4 +195,23 @@ export function buildCommentCampaignDraftQueue(
       safetyNote: "자동 발송하지 않음 · 일괄 발송하지 않음 · 사람이 댓글/DM 초안을 승인해야 함",
     }]
   })
+}
+
+export function applyCommentCampaignDecision(
+  decisions: CommentCampaignDecisionMap,
+  dedupeKey: string,
+  status: CommentCampaignDecisionStatus,
+): CommentCampaignDecisionMap {
+  const isApproved = status === "approved"
+  return {
+    ...decisions,
+    [dedupeKey]: {
+      status,
+      sendMode: isApproved ? "mock-send-log-only" : "blocked",
+      auditSummary: isApproved
+        ? "댓글 캠페인 초안을 승인했습니다. 실제 전송 아님, 목업 전송 기록만 남깁니다."
+        : "댓글 캠페인 초안을 보류했습니다. 실제 전송은 차단됩니다.",
+      decidedAt: new Date().toISOString(),
+    },
+  }
 }
