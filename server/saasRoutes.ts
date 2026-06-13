@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { MOCK_WEBHOOK_PAYLOADS } from "../src/data/mockWebhookPayloads"
+import { DEFAULT_COMMENT_CAMPAIGN_CONFIG, assessCommentCampaignSafety } from "../src/domain/commentCampaign"
 import { readMetaLiveInboxConfig } from "./config"
 import { createLocalInviteCodeGate } from "./friendsBetaInviteGate"
 import { evaluateFriendsBetaReadiness } from "./friendsBetaReadiness"
@@ -67,6 +68,7 @@ function readiness(env: RuntimeEnv): ResponsePayload {
     exposesTokenValues: false,
   } as const
   const friendsBeta = evaluateFriendsBetaReadiness(safety)
+  const commentCampaignSafety = assessCommentCampaignSafety(DEFAULT_COMMENT_CAMPAIGN_CONFIG)
 
   return json(200, {
     ok: true,
@@ -77,6 +79,11 @@ function readiness(env: RuntimeEnv): ResponsePayload {
     friendsBeta,
     safety,
     outboundAutomationLimits: FRIENDS_BETA_OUTBOUND_LIMIT_POLICY,
+    commentCampaign: {
+      enabled: true,
+      config: DEFAULT_COMMENT_CAMPAIGN_CONFIG,
+      safety: commentCampaignSafety,
+    },
     gates: ["Choose managed Postgres/Supabase", "Install production key management", "Complete Meta app review", "Add billing and tenant limits"],
     localEnv: {
       devEncryptionKeyPresent: env["DEV_ENCRYPTION_KEY"] !== undefined,

@@ -1,0 +1,104 @@
+.commentCampaignPanel {
+  margin-top: 16px;
+  border: 1px solid rgba(237, 241, 238, 0.1);
+  border-radius: 8px;
+  background: rgba(28, 31, 33, 0.92);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+}
+
+.commentCampaignPanel header {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px;
+}
+
+.commentCampaignPanel h2 {
+  margin: 7px 0 0;
+  color: #f7f4e8;
+  font-size: 1.35rem;
+}
+
+.commentCampaignPanel header p,
+.commentCampaignGrid p,
+.commentCampaignSafety p,
+.commentCampaignSafety li {
+  margin: 0;
+  color: #aeb8b1;
+  line-height: 1.6;
+}
+
+.commentCampaignPanel header > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(127, 216, 192, 0.12);
+  color: #7fd8c0;
+  font-size: 0.76rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.commentCampaignGrid,
+.commentCampaignSafety {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 18px 18px;
+}
+
+.commentCampaignSafety {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.commentCampaignGrid article,
+.commentCampaignSafety section {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(237, 241, 238, 0.09);
+  border-radius: 8px;
+  background: rgba(17, 19, 21, 0.74);
+}
+
+.commentCampaignGrid strong,
+.commentCampaignSafety h3 {
+  margin: 0;
+  color: #f7f4e8;
+}
+
+.commentCampaignGrid code {
+  display: block;
+  overflow-wrap: anywhere;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(127, 216, 192, 0.08);
+  color: #d8e8e1;
+  font-size: 0.75rem;
+}
+
+.keywordPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.keywordPills span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(127, 216, 192, 0.1);
+  color: #d8e8e1;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.keywordPills.danger span {
+  background: rgba(255, 110, 110, 0.11);
+  color: #ffc6c6;
+}

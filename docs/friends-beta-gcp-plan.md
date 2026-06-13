@@ -79,6 +79,17 @@ The current invite gate is a stub:
 
 Before any hosted beta, replace the stub with a durable invite table, expiration, one-use redemption, audit logging, and an explicit tester removal path.
 
+## Post Comment Campaigns
+
+The comment-to-DM path should be configured per Instagram post/media, not globally:
+
+- Register one post URL or `mediaId` per campaign.
+- Target either keyword-matching comments or every commenter on that post.
+- Allow one keyword or multiple keywords; exclude spam/ads/abuse/link-like comments before drafting.
+- Actions are draft-only in friends beta: public reply draft, DM draft, or public reply + DM draft.
+- Auto-send and batch send remain off; every reply/DM requires human approval and outbound throttles.
+- Treat "every commenter" and "public reply + DM" as high-risk modes in the UI.
+
 ## Token Deletion Path
 
 Before a friend connects a real Instagram account, the app needs a simple deletion path:

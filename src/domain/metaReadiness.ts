@@ -77,6 +77,7 @@ const messagingSchema = z.object({
 const commentValueSchema = z.object({
   comment_id: z.string().optional(),
   from: userSchema.optional(),
+  media: z.object({ id: z.string().optional() }).optional(),
   text: z.string().optional(),
 })
 
@@ -179,14 +180,17 @@ export function normalizeMockMetaWebhookPayload(payload: unknown, fixtureId: str
         issues.push(issue("error", "missing-comment-text", "Comment payload is missing value.text, so no inbox event was created."))
         return
       }
-      events.push({
+      const commentEvent: InstagramEvent = {
         channel: "comment",
         id: change.value.comment_id ?? `${fixtureId}-comment-${entryIndex}-${changeIndex}`,
         message: change.value.text,
         receivedAt: timestampToIso(entry.time),
         senderHandle: senderHandle(change.value.from),
         senderName: senderName(change.value.from),
-      })
+        ...(change.value.comment_id === undefined ? {} : { commentId: change.value.comment_id }),
+        ...(change.value.media?.id === undefined ? {} : { mediaId: change.value.media.id }),
+      }
+      events.push(commentEvent)
     })
   })
 

@@ -38,6 +38,8 @@ export type InstagramEvent = {
   readonly senderHandle: string
   readonly receivedAt: string
   readonly message: string
+  readonly mediaId?: string
+  readonly commentId?: string
 }
 
 export type ExtractedFields = {

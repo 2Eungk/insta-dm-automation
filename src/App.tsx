@@ -13,6 +13,7 @@ import { SampleDataControls } from "./components/SampleDataControls"
 import { ShortcutHelpPanel } from "./components/ShortcutHelpPanel"
 import { SummaryCard } from "./components/SummaryCard"
 import { AutomationSettingsPanel } from "./components/AutomationSettingsPanel"
+import { CommentCampaignPanel } from "./components/CommentCampaignPanel"
 import { Toolbar } from "./components/Toolbar"
 import { useLocalAutomationConfig } from "./hooks/useLocalAutomationConfig"
 import { useReviewDashboard } from "./hooks/useReviewDashboard"
@@ -175,6 +176,7 @@ export function App(): React.JSX.Element {
       <AnalyticsPanel analytics={dashboard.localAnalytics} />
 
       <MetaConnectionSection />
+      <CommentCampaignPanel />
 
       <PrivacySafetyChecklist />
 
