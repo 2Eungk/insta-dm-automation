@@ -12,6 +12,7 @@ The first beta should stay manual:
 - Onboard through a direct conversation, not public marketing.
 - Keep the product read-only or approval-only.
 - Do not auto-send replies.
+- Before any real outbound send path exists, enforce anti-lock throttles: no batch sends, 45-second minimum gap, max 1/min, 3/5min, 5/10min, 10/30min, 15/hour, and 1-hour per-recipient cooldown.
 - Do not create production webhook subscriptions.
 - Do not accept payments.
 - Keep a visible token deletion path before any tester connects an account.
@@ -62,6 +63,7 @@ Friends beta candidate requires:
 - `acceptsPayments: false`
 - `exposesTokenValues: false`
 - raw Meta payload storage remains disabled
+- outbound automation remains `approval-only-throttled` with `autoSendEnabled: false` and `batchSendsAllowed: false`
 
 If any send, webhook subscription, payment, raw-payload storage, or token exposure path becomes true, friends beta candidate must become false until the risk is removed.
 

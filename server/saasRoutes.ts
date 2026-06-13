@@ -4,6 +4,7 @@ import { readMetaLiveInboxConfig } from "./config"
 import { createLocalInviteCodeGate } from "./friendsBetaInviteGate"
 import { evaluateFriendsBetaReadiness } from "./friendsBetaReadiness"
 import { json } from "./http"
+import { FRIENDS_BETA_OUTBOUND_LIMIT_POLICY } from "./outboundAutomationLimits"
 import { SECURITY_READINESS } from "./security"
 import { DEMO_ACCOUNT_ID, createDemoBootstrapSnapshot } from "./saasBootstrap"
 import { createLocalDevTokenEncryption } from "./saasCrypto"
@@ -75,6 +76,7 @@ function readiness(env: RuntimeEnv): ResponsePayload {
     friendsBetaCandidate: friendsBeta.candidate,
     friendsBeta,
     safety,
+    outboundAutomationLimits: FRIENDS_BETA_OUTBOUND_LIMIT_POLICY,
     gates: ["Choose managed Postgres/Supabase", "Install production key management", "Complete Meta app review", "Add billing and tenant limits"],
     localEnv: {
       devEncryptionKeyPresent: env["DEV_ENCRYPTION_KEY"] !== undefined,
@@ -92,6 +94,7 @@ function securityReadiness(): ResponsePayload {
     productionReady: false,
     friendsBetaSecurityCandidate: true,
     security: SECURITY_READINESS,
+    outboundAutomationLimits: FRIENDS_BETA_OUTBOUND_LIMIT_POLICY,
     boundary: "Local hardening only. Keep Cloud Run/IAM/Secret Manager rules separate before any real deployment.",
   })
 }

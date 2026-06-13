@@ -62,6 +62,15 @@ async function verifyFriendsBetaReadiness(module) {
   assert.equal(body.safety.createsWebhookSubscriptions, false)
   assert.equal(body.safety.acceptsPayments, false)
   assert.equal(body.safety.exposesTokenValues, false)
+  assert.equal(body.outboundAutomationLimits.autoSendEnabled, false)
+  assert.equal(body.outboundAutomationLimits.batchSendsAllowed, false)
+  assert.deepEqual(body.outboundAutomationLimits.windows.map((window) => [window.windowSeconds, window.maxActions]), [
+    [60, 1],
+    [300, 3],
+    [600, 5],
+    [1800, 10],
+    [3600, 15],
+  ])
 }
 
 async function verifyInviteValidation(module) {
@@ -108,6 +117,8 @@ function verifyPanelCopy(module) {
   assert.equal(html.includes("Friends beta candidate, not public SaaS"), true)
   assert.equal(html.includes("Cheapest next path: one Cloud Run service plus a manual admin invite code"), true)
   assert.equal(html.includes("3-5 trusted testers only"), true)
+  assert.equal(html.includes("Anti-lock throttle"), true)
+  assert.equal(html.includes("1/min"), true)
 }
 
 const { module, tempDir } = await loadRouteModule()

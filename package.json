@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
-    "check": "node scripts/smoke-check.mjs && node scripts/server-smoke-check.mjs && node scripts/long-lived-token-smoke-check.mjs && node scripts/live-inbox-smoke-check.mjs && node scripts/saas-foundation-smoke-check.mjs && node scripts/friends-beta-smoke-check.mjs && node scripts/security-smoke-check.mjs",
+    "check": "node scripts/smoke-check.mjs && node scripts/server-smoke-check.mjs && node scripts/long-lived-token-smoke-check.mjs && node scripts/live-inbox-smoke-check.mjs && node scripts/saas-foundation-smoke-check.mjs && node scripts/friends-beta-smoke-check.mjs && node scripts/security-smoke-check.mjs && node scripts/outbound-limits-smoke-check.mjs",
     "lint": "eslint . --max-warnings=0",
     "preview": "vite preview --host 127.0.0.1",
     "server:build": "node scripts/build-server.mjs",

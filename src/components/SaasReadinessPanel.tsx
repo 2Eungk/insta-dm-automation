@@ -12,6 +12,8 @@ const deploymentGates = [
   "No public marketing until Meta app review and business verification are done",
 ] as const
 
+const outboundLimits = ["1/min", "3/5min", "5/10min", "10/30min", "15/hour"] as const
+
 export function SaasReadinessPanel(): React.JSX.Element {
   return (
     <section className="saasReadinessPanel" aria-labelledby="saas-readiness-title">
@@ -32,6 +34,10 @@ export function SaasReadinessPanel(): React.JSX.Element {
         <article>
           <strong>Beta boundary</strong>
           <p>Production readiness stays false. Friends beta stays true only while sends, webhook subscriptions, payments, and token exposure are false.</p>
+        </article>
+        <article>
+          <strong>Anti-lock throttle</strong>
+          <p>Future outbound actions must stay approval-only and capped at {outboundLimits.join(" · ")}; batch sends stay off.</p>
         </article>
         <article>
           <strong>Tester promise</strong>
