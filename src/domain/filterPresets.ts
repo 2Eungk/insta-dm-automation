@@ -19,12 +19,12 @@ export type FilterPreset = {
 }
 
 export const FILTER_PRESETS: readonly FilterPreset[] = [
-  { id: "all", label: "All", detail: "모든 로컬 샘플 문의" },
-  { id: "needsInfo", label: "Needs info", detail: "누락 정보가 있는 문의" },
-  { id: "highPriority", label: "High priority", detail: "긴급 또는 스팸 신호" },
-  { id: "supportQueue", label: "Support queue", detail: "고객지원/불만 분류" },
-  { id: "spamReview", label: "Spam review", detail: "스팸 후보 검토" },
-  { id: "approved", label: "Approved", detail: "승인 완료 상태" },
+  { id: "all", label: "전체", detail: "모든 로컬 샘플 문의" },
+  { id: "needsInfo", label: "정보 필요", detail: "누락 정보가 있는 문의" },
+  { id: "highPriority", label: "긴급", detail: "긴급 또는 스팸 신호" },
+  { id: "supportQueue", label: "고객지원", detail: "고객지원/불만 분류" },
+  { id: "spamReview", label: "스팸 검토", detail: "스팸 후보 검토" },
+  { id: "approved", label: "승인됨", detail: "승인 완료 상태" },
 ]
 
 export function itemMatchesFilterPreset(item: EventViewModel, filterPresetId: FilterPresetId): boolean {

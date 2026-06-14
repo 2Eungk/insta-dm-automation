@@ -22,7 +22,7 @@ export function ManualImportPanel(): React.JSX.Element {
     <section className="manualImportPanel" aria-labelledby="manual-import-title">
       <header>
         <div>
-          <p className="eyebrow">WORKING MODE</p>
+          <p className="eyebrow">작업 모드</p>
           <h2 id="manual-import-title">실전 붙여넣기</h2>
           <p>
             여기에 실제 DM/댓글을 붙여넣으면 브라우저 안에서 바로 분류·초안 생성까지 작동합니다. 자동발송 없음,

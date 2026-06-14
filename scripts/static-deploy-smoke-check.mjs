@@ -16,6 +16,6 @@ assert.equal(workflow.includes("npm run build"), true, "workflow must build the 
 assert.equal(workflow.includes("GITHUB_PAGES: \"true\""), true, "workflow must set GitHub Pages base env")
 assert.equal(readme.includes("https://2eungk.github.io/insta-dm-automation/"), true, "README must show the friend beta URL")
 assert.equal(readme.includes("실제 Instagram/Meta API, 토큰, 백엔드, 자동 발송은 포함하지 않습니다."), true, "README must keep the no-real-send warning")
-assert.equal(app.includes("Friends beta web demo"), true, "first viewport must disclose friends beta web demo mode")
+assert.equal(app.includes("친구 베타 · 로컬 검토 데스크"), true, "first viewport must disclose friends beta/local demo mode")
 
 console.log("static-deploy-smoke-check: GitHub Pages static demo guard passed")

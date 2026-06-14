@@ -45,7 +45,7 @@ export function DetailPanel({
         </div>
         <div className="detailBadges">
           <span className={`priorityPill priority-${reviewPriority}`}>
-            {reviewPriority === "high" ? "High priority" : reviewPriority === "medium" ? "Needs review" : "Normal"}
+            {reviewPriority === "high" ? "긴급 확인" : reviewPriority === "medium" ? "검토 필요" : "보통"}
           </span>
           <span className={`badge badge-${item.analysis.classification}`}>
             {CLASSIFICATION_LABELS[item.analysis.classification]}
@@ -101,7 +101,7 @@ export function DetailPanel({
 
       <section className="knowledgeBox" aria-label="FAQ 및 지식 매칭">
         <header>
-          <span>FAQ/지식 매칭</span>
+          <span>자주 쓰는 답변 매칭</span>
           <strong>{CLASSIFICATION_LABELS[item.analysis.classification]}</strong>
         </header>
         <div className="knowledgeList">

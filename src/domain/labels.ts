@@ -19,11 +19,11 @@ export const STATUS_LABELS: Record<Status, string> = {
 }
 
 export const WORKSPACE_PRESET_LABELS: Record<WorkspacePreset, string> = {
-  generic: "Generic",
-  ecommerce: "Ecommerce",
-  bookingService: "Booking / Service",
-  creatorCommunity: "Creator / Community",
-  customerSupport: "Customer Support",
+  generic: "공통 문의",
+  ecommerce: "쇼핑몰/상품",
+  bookingService: "예약/서비스",
+  creatorCommunity: "크리에이터/커뮤니티",
+  customerSupport: "고객응대",
 }
 
 export const REPLY_TONE_LABELS: Record<ReplyTone, string> = {

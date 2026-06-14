@@ -53,8 +53,8 @@ export function AnalyticsPanel({ analytics }: AnalyticsPanelProps): React.JSX.El
     <section className="analyticsPanel" aria-label="로컬 분석">
       <div className="analyticsHeader">
         <div>
-          <p>Local Analytics</p>
-          <strong>{analytics.total} visible</strong>
+          <p>로컬 분석</p>
+          <strong>표시 중 {analytics.total}건</strong>
         </div>
         <span title="현재 브라우저의 번들 샘플과 선택된 필터만 집계합니다.">샘플과 현재 필터 기준</span>
       </div>
@@ -62,11 +62,11 @@ export function AnalyticsPanel({ analytics }: AnalyticsPanelProps): React.JSX.El
         이 수치는 저장된 보기, 검색, 분류/상태 필터가 적용된 화면 범위만 요약합니다.
       </p>
       <div className="analyticsGrid">
-        <DistributionBlock title="Classification" segments={analytics.classificationDistribution} />
-        <DistributionBlock title="Priority" segments={analytics.priorityDistribution} />
-        <DistributionBlock title="Response status" segments={analytics.statusDistribution} />
+        <DistributionBlock title="분류" segments={analytics.classificationDistribution} />
+        <DistributionBlock title="우선순위" segments={analytics.priorityDistribution} />
+        <DistributionBlock title="응답 상태" segments={analytics.statusDistribution} />
         <section className="analyticsBlock">
-          <h3>Missing-info hotspots</h3>
+          <h3>누락 정보 빈도</h3>
           <HotspotList hotspots={analytics.missingInfoHotspots} />
         </section>
       </div>

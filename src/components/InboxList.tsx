@@ -45,10 +45,10 @@ export function InboxList({
     <section className="inbox" aria-label="인박스 목록">
       <div className="panelHeader">
         <div>
-          <p>Inbox</p>
+          <p>문의함</p>
           <strong>{events.length}</strong>
         </div>
-        <span>{selectedCount} selected</span>
+        <span>{selectedCount}개 선택</span>
       </div>
       <div className="batchBar" aria-label="선택 항목 일괄 상태 변경">
         <button type="button" disabled={events.length === 0} onClick={onSelectAllVisible} aria-label="보이는 문의 전체 선택">전체 선택</button>
@@ -96,7 +96,7 @@ export function InboxList({
                 <span className="messagePreview">{item.event.message}</span>
                 <span className="itemMeta">
                   <span className={`priorityPill priority-${priority}`}>
-                    {priority === "high" ? "High" : priority === "medium" ? "Review" : "Normal"}
+                    {priority === "high" ? "긴급" : priority === "medium" ? "검토" : "보통"}
                   </span>
                   <span className={`badge badge-${item.analysis.classification}`}>
                     {CLASSIFICATION_LABELS[item.analysis.classification]}
@@ -104,7 +104,7 @@ export function InboxList({
                   <span className={`statusDot status-${item.state.status}`}>
                     {STATUS_LABELS[item.state.status]}
                   </span>
-                  <span className="signalCount">{signalCount} signals</span>
+                  <span className="signalCount">신호 {signalCount}개</span>
                 </span>
               </button>
             </article>

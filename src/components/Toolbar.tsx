@@ -82,7 +82,7 @@ export function Toolbar({
         />
       </label>
       <label>
-        <span>프리셋</span>
+        <span>업종</span>
         <select
           value={workspacePreset}
           onChange={(event) => onWorkspacePresetChange(parseWorkspacePreset(event.target.value))}
@@ -157,7 +157,7 @@ export function Toolbar({
         </div>
       </div>
       <div className="quickReplyHints" aria-label="프리셋 빠른 답장 예시">
-        <span>빠른 답장 힌트</span>
+        <span>바로 쓸 문장</span>
         <div>
           {quickReplies.map((reply) => (
             <em key={reply}>{reply}</em>

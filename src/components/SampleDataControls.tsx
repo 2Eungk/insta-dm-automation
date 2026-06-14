@@ -45,7 +45,7 @@ export function SampleDataControls({
         <p>{SAMPLE_SCENARIO_DESCRIPTIONS[sampleScenario]}</p>
       </div>
       <div className="sampleActions" aria-label="샘플 데이터 작업">
-        <span>{eventCount} mock events</span>
+        <span>목업 문의 {eventCount}건</span>
         <button
           type="button"
           onClick={onResetLocalState}

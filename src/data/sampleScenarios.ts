@@ -2,17 +2,17 @@ import type { InstagramEvent, SampleScenario } from "../domain/types"
 import { MOCK_EVENTS } from "./mockEvents"
 
 export const SAMPLE_SCENARIO_LABELS: Record<SampleScenario, string> = {
-  generic: "Generic",
-  ecommerce: "Ecommerce",
-  booking: "Booking",
-  support: "Support",
+  generic: "공통 문의",
+  ecommerce: "쇼핑몰/상품",
+  booking: "예약/서비스",
+  support: "고객응대",
 }
 
 export const SAMPLE_SCENARIO_DESCRIPTIONS: Record<SampleScenario, string> = {
-  generic: "Mixed social inbox with product, booking, support, partnership, spam, and open-ended questions.",
-  ecommerce: "Retail-style DMs focused on stock, price, delivery, exchanges, and order references.",
-  booking: "Appointment and service inquiries that need date, location, channel, and contact details.",
-  support: "Customer-care queue with urgent support, refund, cancellation, and missing-info cases.",
+  generic: "상품, 예약, 고객지원, 제휴, 스팸, 기타 문의가 섞인 기본 소셜 인박스입니다.",
+  ecommerce: "재고, 가격, 배송, 교환, 주문번호 문의가 많은 쇼핑몰형 DM 샘플입니다.",
+  booking: "날짜, 장소, 채널, 연락처 확인이 필요한 예약·서비스 문의 샘플입니다.",
+  support: "긴급 지원, 환불, 취소, 누락 정보가 섞인 고객응대 큐 샘플입니다.",
 }
 
 const ECOMMERCE_EVENTS: readonly InstagramEvent[] = [

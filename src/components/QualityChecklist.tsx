@@ -12,13 +12,13 @@ export function QualityChecklist({ item }: QualityChecklistProps): React.JSX.Ele
   return (
     <section className="qualityChecklist" aria-label="초안 품질 체크리스트">
       <header>
-        <span>Draft Quality</span>
+        <span>초안 품질</span>
         <strong>{warnCount === 0 ? "모두 통과" : `${warnCount}개 경고`}</strong>
       </header>
       <div className="qualityGrid">
         {checks.map((check) => (
           <article key={check.id} className={`qualityItem quality-${check.state}`}>
-            <span>{check.state === "pass" ? "PASS" : "WARN"}</span>
+            <span>{check.state === "pass" ? "통과" : "확인"}</span>
             <strong>{check.label}</strong>
             <p>{check.detail}</p>
           </article>

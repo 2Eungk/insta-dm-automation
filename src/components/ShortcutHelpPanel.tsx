@@ -18,14 +18,14 @@ export function ShortcutHelpPanel({ isOpen, onToggle, onClose }: ShortcutHelpPan
   return (
     <section className="shortcutHelp" aria-label="키보드 단축키">
       <button type="button" className="shortcutToggle" onClick={onToggle} aria-expanded={isOpen}>
-        Keyboard shortcuts
+        단축키
       </button>
       {isOpen ? (
         <div className="shortcutPanel">
           <div className="shortcutPanelHeader">
-            <strong>Operator shortcuts</strong>
+            <strong>운영자 단축키</strong>
             <button type="button" onClick={onClose} aria-label="단축키 도움말 닫기">
-              Close
+              닫기
             </button>
           </div>
           <dl>

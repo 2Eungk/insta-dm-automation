@@ -1,35 +1,35 @@
 const READINESS_ITEMS = [
   {
-    title: "Business / Creator account",
-    body: "Confirm the Instagram account type and ownership chain before any production connection.",
+    title: "비즈니스/크리에이터 계정",
+    body: "실서비스 연결 전 Instagram 계정 유형과 소유 권한 흐름을 먼저 확인합니다.",
   },
   {
-    title: "Facebook Page link",
-    body: "Confirm the Instagram account is connected to the correct Facebook Page and business assets.",
+    title: "Facebook 페이지 연결",
+    body: "Instagram 계정이 올바른 Facebook 페이지와 비즈니스 자산에 연결되어 있는지 확인합니다.",
   },
   {
-    title: "App review permissions",
-    body: "Map required Meta permissions, reviewer evidence, and allowed use cases before app review.",
+    title: "앱 심사 권한",
+    body: "Meta 앱 심사 전에 필요한 권한, 제출 증빙, 허용 사용 사례를 정리합니다.",
   },
   {
-    title: "Webhook endpoint",
-    body: "Design verification, retries, rate limits, and abuse handling before exposing any endpoint.",
+    title: "웹훅 엔드포인트",
+    body: "외부 공개 전에 검증, 재시도, 호출 제한, 악용 대응 방식을 설계합니다.",
   },
   {
-    title: "Token storage",
-    body: "Use backend-only encrypted storage and rotation. This local app stores no secrets.",
+    title: "토큰 보관",
+    body: "토큰은 백엔드 암호화 저장과 교체 정책이 필요합니다. 이 로컬 앱은 비밀값을 저장하지 않습니다.",
   },
   {
-    title: "Privacy disclosure",
-    body: "Publish what message data is processed, why, who reviews it, and how users can request deletion.",
+    title: "개인정보 고지",
+    body: "어떤 메시지 데이터를 왜 처리하는지, 누가 검토하는지, 삭제 요청은 어떻게 받는지 공개해야 합니다.",
   },
   {
-    title: "Retention policy",
-    body: "Define deletion windows for messages, exports, audit logs, and operator notes before launch.",
+    title: "보관/삭제 정책",
+    body: "메시지, 내보내기 파일, 감사 로그, 운영자 메모의 삭제 주기를 출시 전에 정합니다.",
   },
   {
-    title: "Operator approval flow",
-    body: "Require reviewer, approver, admin, and audit-only roles before any real customer reply.",
+    title: "운영자 승인 흐름",
+    body: "실제 고객 답장 전 검토자, 승인자, 관리자, 감사 전용 역할을 분리합니다.",
   },
 ] as const
 
@@ -38,10 +38,10 @@ export function PrivacySafetyChecklist(): React.JSX.Element {
     <section className="privacyChecklist" aria-labelledby="privacy-checklist-title">
       <header>
         <div>
-          <p className="eyebrow">Integration readiness</p>
-          <h2 id="privacy-checklist-title">Ready before Meta checklist</h2>
+          <p className="eyebrow">실서비스 전 점검</p>
+          <h2 id="privacy-checklist-title">Meta 연결 전 체크리스트</h2>
         </div>
-        <span>Planning only · non-functional</span>
+        <span>기획용 · 실제 연결 없음</span>
       </header>
       <div className="privacyChecklistGrid">
         {READINESS_ITEMS.map((item) => (
