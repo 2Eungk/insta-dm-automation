@@ -54,7 +54,7 @@ export const DEFAULT_RULE_CONFIG: RuleConfig = {
 const REVIEW_REMINDER = "※ 실제 발송 전 운영자가 검토하고 승인해야 합니다."
 
 function buildTemplate(opening: string, closing: string): string {
-  return `${opening}\n\n{classificationLabel}로 확인했습니다.\n{fieldSummary}\n{missingQuestions}\n\n${REVIEW_REMINDER}\n${closing}`
+  return `${opening}\n\n분류: {classificationLabel}\n{fieldSummary}\n{missingQuestions}\n\n${REVIEW_REMINDER}\n${closing}`
 }
 
 export const DEFAULT_TEMPLATE_CONFIG: TemplateConfig = {

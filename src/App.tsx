@@ -1,19 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-import { AnalyticsPanel } from "./components/AnalyticsPanel"
-import { ActivityTrail } from "./components/ActivityTrail"
-import { DemoGuide } from "./components/DemoGuide"
+import { useEffect, useMemo, useRef } from "react"
 import { DetailPanel } from "./components/DetailPanel"
 import { EmptyState } from "./components/EmptyState"
 import { InboxList } from "./components/InboxList"
-import { MetaConnectionSection } from "./components/MetaConnectionSection"
-import { OnboardingChecklist } from "./components/OnboardingChecklist"
-import { PrivacySafetyChecklist } from "./components/PrivacySafetyChecklist"
-import { RulesPreviewPanel } from "./components/RulesPreviewPanel"
 import { SampleDataControls } from "./components/SampleDataControls"
-import { ShortcutHelpPanel } from "./components/ShortcutHelpPanel"
 import { SummaryCard } from "./components/SummaryCard"
-import { AutomationSettingsPanel } from "./components/AutomationSettingsPanel"
-import { CommentCampaignPanel } from "./components/CommentCampaignPanel"
 import { ManualImportPanel } from "./components/ManualImportPanel"
 import { Toolbar } from "./components/Toolbar"
 import { useLocalAutomationConfig } from "./hooks/useLocalAutomationConfig"
@@ -31,7 +21,6 @@ export function App(): React.JSX.Element {
   const localAutomationConfig = useLocalAutomationConfig()
   const dashboard = useReviewDashboard(localAutomationConfig.ruleConfig, localAutomationConfig.templateConfig)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const [isShortcutHelpOpen, setIsShortcutHelpOpen] = useState(false)
   const selectedIndex = useMemo(
     () => dashboard.filteredEvents.findIndex((item) => item.event.id === dashboard.visibleSelectedId),
     [dashboard.filteredEvents, dashboard.visibleSelectedId],
@@ -55,19 +44,7 @@ export function App(): React.JSX.Element {
       const key = event.key.toLowerCase()
       const isEditable = isEditableTarget(event.target)
 
-      if (key === "escape" && isShortcutHelpOpen) {
-        event.preventDefault()
-        setIsShortcutHelpOpen(false)
-        return
-      }
-
       if (isEditable) {
-        return
-      }
-
-      if (event.shiftKey && key === "?") {
-        event.preventDefault()
-        setIsShortcutHelpOpen((isOpen) => !isOpen)
         return
       }
 
@@ -109,7 +86,7 @@ export function App(): React.JSX.Element {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [dashboard, isShortcutHelpOpen, selectedIndex])
+  }, [dashboard, selectedIndex])
 
   return (
     <main className="appShell">
@@ -144,17 +121,20 @@ export function App(): React.JSX.Element {
         onFilterPresetChange={dashboard.applyFilterPreset}
       />
 
-      <ShortcutHelpPanel
-        isOpen={isShortcutHelpOpen}
-        onToggle={() => setIsShortcutHelpOpen((isOpen) => !isOpen)}
-        onClose={() => setIsShortcutHelpOpen(false)}
-      />
-
       <section className="summaryGrid" aria-label="승인 큐 요약">
         <SummaryCard label="신규" value={dashboard.queueSummary.newCount} detail="아직 처리 전" />
         <SummaryCard label="정보 필요" value={dashboard.queueSummary.needsInfoCount} detail="누락 필드 있음" />
         <SummaryCard label="높은 우선순위" value={dashboard.queueSummary.highPriorityCount} detail="긴급/스팸 신호" tone="alert" />
         <SummaryCard label="승인됨" value={dashboard.queueSummary.approvedCount} detail="목업 승인 완료" tone="positive" />
+      </section>
+
+      <section className="quickStartDeck" aria-label="바로 써보기">
+        <ManualImportPanel />
+        <SampleDataControls
+          sampleScenario={dashboard.sampleScenario}
+          eventCount={dashboard.sampleEventCount}
+          onSampleScenarioChange={dashboard.updateSampleScenario}
+        />
       </section>
 
       <section className="workspace">
@@ -192,49 +172,6 @@ export function App(): React.JSX.Element {
           />
         )}
       </section>
-
-      <section className="utilityDeck" aria-label="샘플과 수동 입력">
-        <SampleDataControls
-          sampleScenario={dashboard.sampleScenario}
-          eventCount={dashboard.sampleEventCount}
-          onSampleScenarioChange={dashboard.updateSampleScenario}
-          onResetLocalState={dashboard.resetCurrentSampleState}
-          onExportJson={dashboard.exportReviewJson}
-          onExportCsv={dashboard.exportReviewCsv}
-        />
-        <ManualImportPanel />
-      </section>
-
-      <AnalyticsPanel analytics={dashboard.localAnalytics} />
-
-      <OnboardingChecklist
-        isVisible={dashboard.isOnboardingVisible}
-        onToggleVisible={dashboard.setIsOnboardingVisible}
-      />
-
-      <DemoGuide />
-      <MetaConnectionSection />
-      <CommentCampaignPanel />
-
-      <PrivacySafetyChecklist />
-
-      <section className="operatorDeck" aria-label="운영자 컨트롤과 감사 로그">
-        <RulesPreviewPanel ruleConfig={localAutomationConfig.ruleConfig} />
-        <ActivityTrail entries={dashboard.auditLog} />
-      </section>
-
-      <AutomationSettingsPanel
-        selectedItem={dashboard.selectedItem}
-        replyTone={dashboard.preferences.replyTone}
-        templateConfig={localAutomationConfig.templateConfig}
-        ruleConfig={localAutomationConfig.ruleConfig}
-        onTemplateChange={localAutomationConfig.updateTemplate}
-        onResetTemplates={localAutomationConfig.resetTemplates}
-        onKeywordGroupsChange={localAutomationConfig.updateKeywordGroups}
-        onClassificationHintChange={localAutomationConfig.updateClassificationHint}
-        onMissingFieldToggle={localAutomationConfig.toggleMissingField}
-        onResetRules={localAutomationConfig.resetRules}
-      />
     </main>
   )
 }

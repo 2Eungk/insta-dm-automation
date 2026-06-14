@@ -23,18 +23,17 @@ export function ManualImportPanel(): React.JSX.Element {
       <header>
         <div>
           <p className="eyebrow">작업 모드</p>
-          <h2 id="manual-import-title">실전 붙여넣기</h2>
+          <h2 id="manual-import-title">내 문의 붙여넣기</h2>
           <p>
-            여기에 실제 DM/댓글을 붙여넣으면 브라우저 안에서 바로 분류·초안 생성까지 작동합니다. 자동발송 없음,
-            서버 업로드 없음, 각자 브라우저에서만 처리합니다.
+            DM/댓글을 한 줄씩 붙여넣으면 바로 분류하고 답장 초안을 만듭니다. 자동발송·서버 업로드 없이 브라우저에서만 처리합니다.
           </p>
         </div>
-        <span>{rows.length}건 분류·초안 생성</span>
+        <span>{rows.length}건 준비됨</span>
       </header>
 
       <div className="manualImportControls">
         <label>
-          <span>붙여넣기 형식</span>
+          <span>문의 내용</span>
           <textarea
             aria-label="실제 DM 또는 댓글 붙여넣기"
             value={inputText}
@@ -44,9 +43,9 @@ export function ManualImportPanel(): React.JSX.Element {
           />
         </label>
         <aside>
-          <strong>형식</strong>
+          <strong>추천 형식</strong>
           <code>이름 | @핸들 | dm/comment | 메시지</code>
-          <p>쉼표 구분도 가능하지만, 메시지에 쉼표가 많으면 | 구분을 권장합니다.</p>
+          <p>이름/핸들을 몰라도 됩니다. 한 줄에 문의 하나씩 넣으면 복사용 답장 초안이 나옵니다.</p>
           <label>
             <span>답장 톤</span>
             <select value={replyTone} onChange={(event) => setReplyTone(event.target.value as ReplyTone)}>
@@ -67,7 +66,7 @@ export function ManualImportPanel(): React.JSX.Element {
             <article key={row.event.id}>
               <div>
                 <strong>{row.event.senderName}</strong>
-                <span>{row.event.senderHandle} · {row.event.channel.toUpperCase()}</span>
+                <span>{row.event.senderHandle} · {row.event.channel === "dm" ? "DM" : "댓글"}</span>
               </div>
               <p>{row.event.message}</p>
               <small>{CLASSIFICATION_LABELS[row.analysis.classification]} · {Math.round(row.analysis.confidence * 100)}% · {row.source}</small>
@@ -76,8 +75,6 @@ export function ManualImportPanel(): React.JSX.Element {
                 <button type="button" onClick={() => void copyDraft(row.event.id, row.draft)}>
                   {copiedId === row.event.id ? "복사됨" : "초안 복사"}
                 </button>
-                <button type="button">승인 표시</button>
-                <button type="button">보류</button>
               </div>
             </article>
           ))
